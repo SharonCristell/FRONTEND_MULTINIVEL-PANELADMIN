@@ -56,6 +56,8 @@ export default class Comission extends Component {
             showAceptar: false,
             showBoton: true,
             showBigPicture: false,
+            idTemp:0,
+            isComplete: false,
 
 
         }
@@ -119,7 +121,7 @@ export default class Comission extends Component {
 
     }
 
-    handleShowVoucher = (e, bank) => {
+    handleShowBoton = (e, bank) => {
 
         //this.sendData()
 
@@ -254,7 +256,8 @@ export default class Comission extends Component {
             if (schedule.status == 1) {
                 this.setState({
                     schedule: this.state.schedule = schedule.objModel.objModel,
-                    showModal: true
+                    showModal: true,
+                    idTemp:this.state.idTemp = schedule.objModel.idSuscription
                 });
             } else {
                 this.setState({
@@ -332,26 +335,25 @@ export default class Comission extends Component {
         }
         // })
     };
-    aceptData = async(e)=> {
+
+    sendData= async(e, idTemp, idmembershipdetail, newVerif)=> {
        
         e.preventDefault();
-       //console.log("register");
+       console.log(idTemp, idmembershipdetail, newVerif);
        
             let data = {};
                      
-            let  suscription = {};
-            suscription.idUser = 0;
-            suscription.idPackage = Number(this.state.user.packages[0].id);
-            let date = new Date();
-            let datString = "2020-07-14T00:00:00";// date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
-            suscription.creationDate = datString;
-            suscription.observation = "";
-            suscription.status =  0; 
+            let  payment = {};
 
-            data.suscription = suscription;               
+            payment.idSuscription =  idTemp;
+            payment.idMembershipDetail = idmembershipdetail;
+            payment.verif = newVerif;
+            
+
+            data.payment = payment;               
             
          
-            let response = await UserService.aceptPayment(data);
+            let response = await UserService.updatePayment(data);
 
             if(response !== undefined) {
                 if(response.status === 1){
@@ -386,7 +388,7 @@ export default class Comission extends Component {
     }
     render() {
         const { pendingList, loading, loadSuscription, message, message2, loadModal } = this.state;
-        const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture} = this.state;
+        const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture, idTemp} = this.state;
         return (
             <div style={{ padding: 30 }}>
                 {loading &&
@@ -448,11 +450,11 @@ export default class Comission extends Component {
                             <Col sm={10}>
                                 <Row>
                                     <Col sm={2}>
-                                    <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
+                                    <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowBoton(e, 'Aceptar') }}>Aceptar</Button>
 
                                     </Col>
                                     <Col sm={2}>
-                                    <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
+                                    <Button size="sm" variant="primary"onClick={(e) => { this.handleShowBoton(e, 'Rechazar') }}>Rechazar</Button>
 
                                     </Col>
                                     <Col sm={8}>
@@ -501,10 +503,10 @@ export default class Comission extends Component {
                                             let run;
                                             console.log(item)
                                             return (
-                                                <tr key={item.idmembershipdetail}>
+                                                <tr key={item.idMembershipDetail}>
 
                                                     <td>
-                                                        <input style={{ height: '20px', width: '20px' }} key={item.idmembershipdetail} type="checkbox" name={item.quoteDescription} value={item.quoteDescription} checked={item.ischecked} onChange={this.handleChange} />
+                                                        <input style={{ height: '20px', width: '20px' }} key={item.idMembershipDetail} type="checkbox" name={item.quoteDescription} value={item.quoteDescription} checked={item.ischecked} onChange={this.handleChange} />
 
                                                     </td>
                                                     <td>{item.quoteDescription}</td>
@@ -576,65 +578,17 @@ export default class Comission extends Component {
                                                     <td>
                                                         {item.verif  === 2 && 
                                                             <div >
-                                                            <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
+                                                            <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowBoton(e, 'Aceptar') }}>Aceptar</Button>
 
 
 
-                                                            <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
+                                                            <Button size="sm" variant="primary"onClick={(e) => { this.handleShowBoton(e, 'Rechazar') }}>Rechazar</Button>
                                                         </div>
                                                         
-                                                        }
-                                                            
-                                                        <div  style={{ display:  (this.showBotones(item.verif ) ? 'inline-block' : 'none') }}     >
-                                                            <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
-
-
-
-                                                            <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
-                                                        </div>
-
-                                                        
-                                                        
+                                                        }        
                                                         
                                                     </td>
                                               
-
-                                                    <Modal
-                                                        size="lg"
-                                                        show={this.state.showRechazar}
-                                                        onHide={this.handleClose}
-                                                        style={{ fontSize: 12 }}
-                                                    >
-
-
-
-                                                        <Modal.Body>
-                                                            <Form.Group>
-
-                                                                <Form.Control as="select" defaultValue={'DEFAULT'}
-                                                                    onChange={e => this.handleSelect(e, "idMotive")}>
-                                                                    <option value="DEFAULT" disabled>Seleccionar Motivo ...</option>
-
-                                                                    {this.state.motivesList}
-                                                                </Form.Control>
-                                                                <br></br>
-                                                                <Form.Control style={{ display: this.state.showOthers, paddingTop: 6 }} type="text" placeholder="Ingrese el nuevo motivo"
-                                                                    onChange={e => this.handleMotive(e, "desMotive")}></Form.Control>
-                                                            </Form.Group>
-
-                                                            <Modal.Footer>
-                                                            <Button variant="danger" onClick={this.handleClose}>
-                                                                    Confirmar
-                                                          </Button>
-                                                                <Button variant="primary" onClick={this.handleClose}>
-                                                                    Cerrar
-                                                          </Button>
-                                                            </Modal.Footer>
-                                                        </Modal.Body>
-                                                    </Modal>
-
-
-
                                                     <Modal
                                                         size="lg"
                                                         show={this.state.showAceptar}
@@ -652,7 +606,8 @@ export default class Comission extends Component {
                                                             </Form.Group>
 
                                                             <Modal.Footer>
-                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                            { console.log(idTemp)}
+                                                            <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, item.idMembershipDetail, 1) }}>
                                                                     Confirmar
                                                           </Button>
                                                                 <Button variant="primary" onClick={this.handleClose}>
@@ -686,7 +641,7 @@ export default class Comission extends Component {
                                                             </Form.Group>
 
                                                             <Modal.Footer>
-                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                            <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, item.idMembershipDetail, 3) }}>
                                                                     Confirmar
                                                           </Button>
                                                                 <Button variant="primary" onClick={this.handleClose}>

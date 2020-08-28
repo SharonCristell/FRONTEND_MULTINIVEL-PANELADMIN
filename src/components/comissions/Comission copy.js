@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Form, Table, Button, Row, Modal, Spinner, Col  } from 'react-bootstrap';
+import { Image, Form, Carousel, Container, Table, Button, Row, Modal, Spinner, Col } from 'react-bootstrap';
+import Checkbox from '@material-ui/core/Checkbox';
+import icon1 from '../../images/icons/blue-check.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Validation from '../utils/Validation';
 import UtilService from '../../services/utils.service';
 import UserService from '../../services/user.service';
+
 import '../../views/styles/ModalCustom.css';
 
 
@@ -12,120 +15,245 @@ export default class Comission extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            debtors: [],
+            pendingList: [],
             emptyList: true,
             message: "No hay registros para mostrar.",
             loading: false,
             date: "21 de agosto del 2020",
             loadSuscription: false,
             message2: false,
+            allChecked: false,
 
-            
-            suscription: [],
             schedule: [],
+            selections: [],
             idSuscription: 0,
             showModal: false,
+            checkedListAll: [],
+            ItemsChecked: false,
+            statusText: "",
+            showOthers: 'none',
+            motivesList: [
+                {
+                    idMotive: 1,
+                    description: "Datos errados",
+
+                },
+                {
+                    idMotive: 2,
+                    description: "Monto errado",
+
+                },
+                {
+                    idMotive: 3,
+                    description: "OTRO",
+
+                }
+
+
+            ],
+            tempDocuments: [],
+            showRechazar: false,
+            showAceptar: false,
+            showBoton: true,
+            showBigPicture: false,
+
+
         }
 
-        this.getRegister = this.getRegister.bind(this);
-        this.getSuscription = this.getSuscription.bind(this);
+        this.getDebtRegister = this.getDebtRegister.bind(this);
+        this.getPendingList = this.getPendingList.bind(this);
     }
 
     componentDidMount() {
-        this.getRegister();
-        this.getSuscription();
+        this.getDebtRegister();
+        this.getPendingList();
+        this.createItemTypes();
+
     }
-    async getSuscription () {
+
+    async getPendingList() {
         // console.log("my pay");
-        let suscriptions = await UserService.getSuscription();
-        if(suscriptions !== undefined && suscriptions !== null){
-            if(suscriptions.status !== 1) {
-                console.log(suscriptions);
+        let pendingLists = await UtilService.getAffiliationPendingList();
+        if (pendingLists !== undefined && pendingLists !== null) {
+            if (pendingLists.status !== 1) {
+
                 this.setState({
-                    suscription: this.state.suscription = [],
+                    pendingList: this.state.pendingList = [],
                     loadSuscription: this.state.loadSuscription = true
                 });
             } else {
-               
+
                 this.setState({
-                    suscription: this.state.suscription = suscriptions.objModel,
+                    pendingList: this.state.pendingList = pendingLists.objModel,
                     loadSuscription: this.state.loadSuscription = true
                 });
             }
         }
-        
+
 
     }
 
-    async getRegister() {
-        let response = await UtilService.getAffiliationPendingList();
-        if (response !== undefined && response !== null) {
-            if (response.status !== 1) {
-                console.log(response);
-                this.setState({
-                    debtors: this.state.debtors = [],
-                    emptyList: this.state.emptyList = true,
-                    message: this.state.message = "Se ha producido un error. Inténte más tarde."
+    async createItemTypes() {
+
+        let response = this.state.motivesList;
+        if (response !== null && response !== undefined) {
+
+            let items = [];
+            if (response.length > 0) {
+                response.forEach(elem => {
+
+
+
+                    items.push(<option key={elem.idMotive} value={elem.idMotive}>{elem.description}</option>);
+
                 });
             } else {
-                if (response.objModel.length > 0) {
-                    this.setState({
-                        debtors: this.state.debtors = response.objModel,
-                        emptyList: this.state.emptyList = false,
-                        message: this.state.mesagge = ""
-                    });
-                } else {
-                    this.setState({
-                        debtors: this.state.debtors = [],
-                        emptyList: this.state.emptyList = true,
-                        message: this.state.mesagge = "No hay registros para mostrar."
-                    });
-                }
-
+                items = this.state.tempDocuments;
             }
+
+            this.setState({ motivesList: items });
+            this.forceUpdate();
         }
+
+
+
+    }
+
+    handleShowVoucher = (e, bank) => {
+
+        //this.sendData()
+
+        if (bank === 'Aceptar') {
+            this.setState({
+                showAceptar: true,
+
+
+            });
+        } else if (bank === 'Rechazar') {
+            this.setState({
+                showRechazar: true,
+
+
+            });
+        }
+
+    }
+
+
+    getDebtRegister = () => {
+        let tags = <tr></tr>;
+
+        if (this.state.pendingList.length > 0) {
+            tags = this.state.pendingList.map((item) => (
+
+                <tr key={item.idSuscription}>
+
+                    <td>{Validation.convertDate(new Date(item.creationDateSuscription))}</td>
+                    <td>{item.username}</td>
+                    <td>{item.name}</td>
+                    <td>{item.lastname}</td>
+                    <td>{item.nroDocument}</td>
+                    <td>{item.patrocinador}</td>
+                    <td>{item.packageName}</td>
+                    <td>
+                        <Button variant="info" size="sm" onClick={e => this.getSchedule(e, item.idSuscription)}>Verificar</Button>
+                    </td>
+
+                </tr>
+            ));
+        }
+        return tags;
+    }
+
+    getVerify = (i) => {
+        let tags = <td></td>;
+
+        if (i == 1) {
+            tags =
+
+                <td>
+                    <p>Pagado</p>
+                </td>
+
+
+        }
+
+        else if (i == 2) {
+            tags =
+
+                <td>
+                    <p>Por verificar</p>
+                </td>
+        }
+
+        else if (i == 3) {
+            tags =
+
+                <td>
+                    <p>Rechazado</p>
+                </td>
+
+
+        }
+        else if (i == 0) {
+            tags =
+
+                <td>
+                    <p> Neutro</p>
+                </td>
+
+        }
+        return tags;
+    }
+
+    showBotones = (i) => {
+
+        console.log("event")
+        let display = false;
+     
+        if (i == 2) {
+
+                display= true
+
+
+        }
+
+        
+        else if (i == 0) {
+
+            display= true
+
+        }
+        return display;
+    }
+
+    handleShow = (e, bank) => {
+        console.log("show modal")
+        if (bank === 'BCP') {
+            this.setState({
+                showBigPicture: this.state.showBigPicture = true,
+
+
+            });
+        }
+
 
     }
 
     // Handle modal 
-    getSchedule = async(e, idSuscription) => {
-        e.preventDefault();
+    getSchedule = async (e, idSuscription) => {
+        //e.preventDefault();
         // this.setState({
         //     showModal : true,
         //     loadModal: true
         // });
-        //console.log(idSuscription);
-        let schedule = await UserService.getSchedule(idSuscription);
-        if(schedule !== undefined && schedule !== null){
-            if(schedule.status == 1) {
-                this.setState({
-                    schedule : this.state.schedule = schedule.objModel,
-                    showModal : true
-                });
-            } else {
-                this.setState({
-                    schedule : this.state.schedule = [],
-                    showModal : false
-                });
-                alert("Tuvimos un error al obtener la información. Inténtelo más tarde.");
-            }
-        } else {
-            this.setState({
-                schedule : this.state.schedule = [],
-                showModal : false
-            });
-            alert("Tuvimos un error al obtener la información. Inténtelo más tarde.")
-        }
-        
-    }
-
-    getResumen = async (e, idSuscription) => {
         console.log(idSuscription);
-        let schedule = await UserService.getSchedule(idSuscription);
+        let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
+
         if (schedule !== undefined && schedule !== null) {
             if (schedule.status == 1) {
                 this.setState({
-                    schedule: this.state.schedule = schedule.objModel,
+                    schedule: this.state.schedule = schedule.objModel.objModel,
                     showModal: true
                 });
             } else {
@@ -133,7 +261,7 @@ export default class Comission extends Component {
                     schedule: this.state.schedule = [],
                     showModal: false
                 });
-                alert("Tuvimos un error al obtener la información. Inténtelo más tarde.");
+                alert("No se hallaron datos de dicho usuario. Inténtelo más tarde.");
             }
         } else {
             this.setState({
@@ -142,149 +270,456 @@ export default class Comission extends Component {
             });
             alert("Tuvimos un error al obtener la información. Inténtelo más tarde.")
         }
+        console.log(this.state.schedule);
 
-        {
-            this.state.suscription.map((item, idx) => {
-                if (item.id === idSuscription) {
-                    this.setState({
-                        userPackage:  this.userPackage = item.package.name,
-                        packageQuote: this.packageQuote=item.package.quotes,
-                        creationDate: this.packagecreationDate=Validation.convertDate(new Date(item.creationDate)),
-                        initialQuote: this.initialQuote=item.package.initialPrice,
+    }
 
-                    });
+    handleChange = (e) => {
+        let schedule = this.state.schedule;
+        let allChecked = this.state.allChecked;
+        if (e.target.value === "checkAll") {
+            schedule.forEach(item => {
+                item.ischecked = e.target.checked;
+                allChecked = e.target.checked;
+            });
+        }
+        else {
+            schedule.find(item => item.quoteDescription === e.target.name).ischecked = e.target.checked;
+        }
+        this.setState({ schedule: schedule, allChecked: allChecked });
+    }
+
+    handleSelect = (e, field) => {
+        // //console.log(e.target.value, field);
+        var value = e.target.value;
+        this.setState({ [field]: value }, () => {
+            if (this.props.onChange) {
+                this.props.onChange(value, field);
+            }
+        })
 
 
+
+        if (field === "idMotive") {
+
+            let text = e.target.options[e.target.selectedIndex].text.toUpperCase();
+            if (text.includes("OTRO")) {
+                this.setState({
+                    showOthers: this.state.showOthers = 'inline'
+                });
+            } else {
+                this.setState({
+                    showOthers: this.state.showOthers = 'none'
+                });
+                if (this.props.onChange) {
+                    this.props.onChange("", "desMotive");
                 }
             }
 
-            );
-
+            this.forceUpdate();
         }
-
     }
+
+    handlehandleMotive = (e, field) => {
+        // //console.log('step one');
+        let value = e.target.value;
+        if (this.props.onChange) {
+            this.props.onChange(e.target.value, field);
+            this.setState({
+                [field]: this.state[field] = value,
+                messageDoc: ""
+            });
+        }
+        // })
+    };
+    aceptData = async(e)=> {
+       
+        e.preventDefault();
+       //console.log("register");
+       
+            let data = {};
+                     
+            let  suscription = {};
+            suscription.idUser = 0;
+            suscription.idPackage = Number(this.state.user.packages[0].id);
+            let date = new Date();
+            let datString = "2020-07-14T00:00:00";// date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay();
+            suscription.creationDate = datString;
+            suscription.observation = "";
+            suscription.status =  0; 
+
+            data.suscription = suscription;               
+            
+         
+            let response = await UserService.aceptPayment(data);
+
+            if(response !== undefined) {
+                if(response.status === 1){
+                    // alert('Usuario registrado');
+                    this.setState({
+                        isComplete: this.state.isComplete = true
+                    });
+                    
+                } else {
+                    alert("Ocurrió un error al momento de realizar la validación.");
+                }
+            } else {
+                alert('Tuvimos un problema en la validación. Inténtalo más tarde.');
+            }
+
+        
+    };
+
+
+
 
     handleClose = () => {
         this.setState({
-            showModal : false,
-            schedule : this.state.schedule = [],
+            showModal: false,
+            schedule: this.state.schedule = [],
         });
     }
-    handleShow= () => {
+    handleShow = () => {
         this.setState({
-            showModal : true
+            showModal: true
         });
     }
     render() {
-        const { suscription, loadSuscription, message2, loadModal } = this.state;
-
+        const { pendingList, loading, loadSuscription, message, message2, loadModal } = this.state;
+        const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture} = this.state;
         return (
             <div style={{ padding: 30 }}>
+                {loading &&
+                    <div>
+                        <Spinner animation="border" variant="dark">
+                        </Spinner>
+                        <p>Cargando la información de pagos</p>
+                    </div>}
+
                 <Form.Group>
                     <p>Información actualizada al: <b>{this.state.date}</b></p>
                 </Form.Group>
                 <Table responsive>
                     <thead className="table-head">
                         <tr>
+                            <th>Marca Temporal</th>
                             <th>Usuario</th>
                             <th>Nombre</th>
                             <th>Apellidos</th>
-                            <th>Email</th>
-                            <th>Celular</th>
                             <th>Nro Documento</th>
                             <th>Patrocinador</th>
+                            <th>Tipo de Membresía</th>
                             <th>Verificación</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.emptyList && <tr>
-                            <td colSpan="6"><Form.Label>{this.state.message}</Form.Label></td>
-                        </tr>}
-                        {!this.state.emptyList && this.state.debtors.map(function (item) {
-                            let date = "";
-                            return (
-                                <tr key={item.id}>
-                                    <td>{item.username}</td>
-                                    <td>{item.name}</td>
-                                    <td>{item.lastname}</td>
-                                    <td>{item.email}</td>
-                                    <td>{item.nroTelf}</td>
-                                    <td>{item.nroDocument}</td>
-                                    <td>{item.patrocinador}</td>
-                                    <td>
-                                        <Button variant="info" size="sm" onClick={e => this.getSchedule(e, item.id)}>Verificar</Button>
-                                    </td>
 
-                                </tr>
-                            )
-                        })
+                        {this.getDebtRegister()}
 
-                        }
                     </tbody>
                 </Table>
-                <Modal 
+                <Modal
                     size="lg"
-                    show={this.state.showModal} 
+                    show={this.state.showModal}
                     onHide={this.handleClose}
-                    style={{fontSize:12}}
-                   >
+                    style={{ fontSize: 12 }}
+                >
                     <Modal.Header closeButton>
-                        <Modal.Title>Detalle</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        
+                        <Modal.Title>Listado de Cronograma</Modal.Title>
                         <br></br>
-                        <Row><Col>
-                        <Table responsive>
-                            <thead className="table-head">
-                                <tr>
-                                    <th>Descripción</th>
-                                    <th>Fecha de vencimiento</th>
-                                    <th>Capital</th>
-                                    <th>Amortización</th>
-                                    <th>Ínteres</th>
-                                    <th>Cuota</th>
-                                    <th>Observación</th>
-                                    <th>Fecha de Pago</th>
-                                    <th>Estado</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    this.state.schedule.map(function(item) {
-                                        console.log(Validation.convertDate(new Date(item.initialDate)));
-                                        return (
-                                            <tr key={item.idCorrelativo}>
-                                            <td>{item.descripcion}</td>
-                                            <td>{Validation.convertDate(new Date(item.initialDate))}</td>
-                                            <td>{item.capitalBalance} USD</td>
-                                            <td>{item.amortizacion} USD</td>
-                                            <td>{item.intereses} USD</td>
-                                            <td>{item.cuota} USD</td>
-                                            <td>{item.observacion}</td>
-                                            <td>fecha de pago</td>
-                                            <td>estado</td>
-                                            <td>
-                                                <Button size="sm">Aceptar</Button>
-                                                <Button size="sm">Denegar</Button>
-                                            </td>
-                                        </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </Table>
+                    </Modal.Header>
+                    <Modal.Body className="show-grid">
+
+                        <Row>
+                            <Col sm={2}>
+                                <Row>
+                                    <Col sm={5}>
+                                        <h6>Aplicar a  </h6>
+
+                                    </Col>
+                                    <Col sm={7}>
+                                        <Image style={{ height: '20px', width: '20px' }} className="col-image" src={icon1} ></Image>
+
+                                    </Col>
+
+                                </Row>
+
+                            </Col>
+                            <Col sm={10}>
+                                <Row>
+                                    <Col sm={2}>
+                                    <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
+
+                                    </Col>
+                                    <Col sm={2}>
+                                    <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
+
+                                    </Col>
+                                    <Col sm={8}>
+
+                                    </Col>
+                                </Row>
+                            </Col>
+
+
+
+                        </Row>
+
+                        <br></br>
+                        <Row><Col sm={12}>
+                            <Table responsive>
+                                <thead className="table-head">
+                                    <tr>
+                                        <th>
+                                            <input
+                                                style={{ height: '20px', width: '20px' }}
+                                                type="checkbox"
+                                                value="checkAll"
+                                                checked={this.state.allChecked}
+                                                onChange={this.handleChange} />   Seleccionar todo
+                                        </th>
+                                        <th>Descripción</th>
+                                        <th>Fecha</th>
+                                        <th>Capital</th>
+                                        <th>Amortización</th>
+                                        <th>Interes</th>
+                                        <th>Cuota</th>
+                                        <th>Puntaje</th>
+                                        <th>Nro. Operación</th>
+                                        <th>Titular Cta. Origen</th>
+                                        <th>Medio de Pago</th>
+                                        <th>Estado</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Observaciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        this.state.schedule.map(function (item) {
+
+                                            let run;
+                                            console.log(item)
+                                            return (
+                                                <tr key={item.idmembershipdetail}>
+
+                                                    <td>
+                                                        <input style={{ height: '20px', width: '20px' }} key={item.idmembershipdetail} type="checkbox" name={item.quoteDescription} value={item.quoteDescription} checked={item.ischecked} onChange={this.handleChange} />
+
+                                                    </td>
+                                                    <td>{item.quoteDescription}</td>
+                                                    <td>{Validation.convertDate(new Date(item.initialdate))}</td>
+                                                    <td>{item.capitalBalance} USD</td>
+                                                    <td>{item.amortization} USD</td>
+                                                    <td>{item.interested} USD</td>
+                                                    <td>{item.quote} USD</td>
+                                                    <td>{item.score}</td>
+                                                    <td>{item.nroOperacion}</td>
+                                                    <td>{item.titularcuenta}</td>
+                                                    <td>{item.idPayMethod}</td>
+
+                                                    {this.getVerify(item.verif)}
+
+                                                    <td>
+
+                                                        {
+                                                            item.objImagen.map(function (i) {
+
+                                                                return (
+
+                                                                    <div >
+                                                                    <Image width="50px" height="50px" key={i.id} src={`data:image/jpeg;base64,${i.imagenes}`}
+                                                                    onClick={(e) => { this.handleShow(e, 'BCP') }}>
+                                                                    
+                                                                    </Image>    
+                                                                    
+                                                                    <Modal
+                                                                    size="lg"
+                                                                    show={this.state.showBigPicture}
+                                                                    onHide={this.handleClose}
+                                                                    style={{ fontSize: 12 }}
+                                                                >
+            
+            
+            
+                                                                    <Modal.Body>
+                                                                        <Form.Group>
+                                                                        <Image width="50px" height="50px" key={i.id} src={`data:image/jpeg;base64,${i.imagenes}`}
+                                                                                onClick={(e) => { this.handleShow(e, 'BCP') }}>
+                                                                                
+                                                                                </Image> 
+                                                                       
+                                                                        </Form.Group>
+            
+                                                                        <Modal.Footer>
+                                                                       
+                                                                            <Button variant="primary" onClick={this.handleClose}>
+                                                                                Cerrar
+                                                                      </Button>
+                                                                        </Modal.Footer>
+                                                                    </Modal.Body>
+                                                                </Modal>
+                                                                </div>
+                                                                    
+
+                                                                )
+                                                            }, this)
+
+
+
+                                                        }
+
+
+                                                    </td>
+
+                                                                                                                  
+                                                    <td>
+                                                        {item.verif  === 2 && 
+                                                            <div >
+                                                            <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
+
+
+
+                                                            <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
+                                                        </div>
+                                                        
+                                                        }
+                                                            
+                                                        <div  style={{ display:  (this.showBotones(item.verif ) ? 'inline-block' : 'none') }}     >
+                                                            <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowVoucher(e, 'Aceptar') }}>Aceptar</Button>
+
+
+
+                                                            <Button size="sm" variant="primary"onClick={(e) => { this.handleShowVoucher(e, 'Rechazar') }}>Rechazar</Button>
+                                                        </div>
+
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                              
+
+                                                    <Modal
+                                                        size="lg"
+                                                        show={this.state.showRechazar}
+                                                        onHide={this.handleClose}
+                                                        style={{ fontSize: 12 }}
+                                                    >
+
+
+
+                                                        <Modal.Body>
+                                                            <Form.Group>
+
+                                                                <Form.Control as="select" defaultValue={'DEFAULT'}
+                                                                    onChange={e => this.handleSelect(e, "idMotive")}>
+                                                                    <option value="DEFAULT" disabled>Seleccionar Motivo ...</option>
+
+                                                                    {this.state.motivesList}
+                                                                </Form.Control>
+                                                                <br></br>
+                                                                <Form.Control style={{ display: this.state.showOthers, paddingTop: 6 }} type="text" placeholder="Ingrese el nuevo motivo"
+                                                                    onChange={e => this.handleMotive(e, "desMotive")}></Form.Control>
+                                                            </Form.Group>
+
+                                                            <Modal.Footer>
+                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                                    Confirmar
+                                                          </Button>
+                                                                <Button variant="primary" onClick={this.handleClose}>
+                                                                    Cerrar
+                                                          </Button>
+                                                            </Modal.Footer>
+                                                        </Modal.Body>
+                                                    </Modal>
+
+
+
+                                                    <Modal
+                                                        size="lg"
+                                                        show={this.state.showAceptar}
+                                                        onHide={this.handleClose}
+                                                        style={{ fontSize: 12 }}
+                                                    >
+
+
+
+                                                        <Modal.Body>
+                                                            <Form.Group>
+                                                            <Form.Label className="content-subtitle">¿Desea confirmar la aceptación del voucher?</Form.Label>                                                            
+                                                                
+                                                            
+                                                            </Form.Group>
+
+                                                            <Modal.Footer>
+                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                                    Confirmar
+                                                          </Button>
+                                                                <Button variant="primary" onClick={this.handleClose}>
+                                                                    Cerrar
+                                                          </Button>
+                                                            </Modal.Footer>
+                                                        </Modal.Body>
+                                                    </Modal>
+
+                                                    <Modal
+                                                        size="lg"
+                                                        show={this.state.showRechazar}
+                                                        onHide={this.handleClose}
+                                                        style={{ fontSize: 12 }}
+                                                    >
+
+
+
+                                                        <Modal.Body>
+                                                            <Form.Group>
+
+                                                                <Form.Control as="select" defaultValue={'DEFAULT'}
+                                                                    onChange={e => this.handleSelect(e, "idMotive")}>
+                                                                    <option value="DEFAULT" disabled>Seleccionar Motivo ...</option>
+
+                                                                    {this.state.motivesList}
+                                                                </Form.Control>
+                                                                <br></br>
+                                                                <Form.Control style={{ display: this.state.showOthers, paddingTop: 6 }} type="text" placeholder="Ingrese el nuevo motivo"
+                                                                    onChange={e => this.handleMotive(e, "desMotive")}></Form.Control>
+                                                            </Form.Group>
+
+                                                            <Modal.Footer>
+                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                                    Confirmar
+                                                          </Button>
+                                                                <Button variant="primary" onClick={this.handleClose}>
+                                                                    Cerrar
+                                                          </Button>
+                                                            </Modal.Footer>
+                                                        </Modal.Body>
+                                                    </Modal>
+                                                    <td>{item.obs}</td>
+
+
+
+
+                                                </tr>
+                                            )
+                                        }, this)
+                                    }
+                                </tbody>
+                            </Table>
                         </Col></Row>
-                        
+
+
                     </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="secondary" onClick={this.handleClose}>
-                        Cerrar
+                        <Button variant="secondary" onClick={this.handleClose}>
+                            Cerrar
                     </Button>
                     </Modal.Footer>
+
                 </Modal>
-            </div>
+
+
+            </div >
         );
     }
 }

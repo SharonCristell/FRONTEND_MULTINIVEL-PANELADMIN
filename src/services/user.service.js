@@ -2,8 +2,9 @@ import authHeader from './auth-header';
 import AuthService from './auth.service';
 
 const proxyurl = "";
-const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
+const  API_URL = proxyurl + ' http://45.66.156.160:90/api/';
 const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
+
 
 class UserService {
     
@@ -375,9 +376,13 @@ class UserService {
           });
     }
 
-    async aceptPayment(data) {
+    async updatePayment(data) {
 
-        let url= API_URL + "schedule/update";
+
+        //let url= API_URL + "schedule/update";
+
+        let url= API_URL + "membershipPayDetail/schedule/update";
+
         return await fetch(url, {
           method:'POST',
           body: JSON.stringify(data),
