@@ -1,7 +1,7 @@
 import authHeader from './auth-header';
 import AuthService from './auth.service';
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
+const proxyurl = "";
 const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
 const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
@@ -377,7 +377,7 @@ class UserService {
 
     async aceptPayment(data) {
 
-        let url= API_URL + "/schedule/update";
+        let url= API_URL + "schedule/update";
         return await fetch(url, {
           method:'POST',
           body: JSON.stringify(data),
