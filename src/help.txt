@@ -1,0 +1,70 @@
+handleCheckClick = () => {
+  this.setState({ checked: !this.state.checked });
+}
+and change the checkbox jsx:
+
+<input type="checkbox" checked={this.state.checked} onChange={this.handleCheckClick} classN
+
+this.setState(prevState => ({
+    jasper: {                   // object that we want to update
+        ...prevState.jasper,    // keep all other key-value pairs
+        name: 'something'       // update the value of specific key
+    }
+}))
+
+
+{
+    "username":"MN99923333323333333119922999",
+    "password":"MN99923333323333333119922999"
+}
+test token 
+const response = pm.response.json();
+pm.environment.set("jwt_token", response.access_Token);
+
+authorixation
+Token {{jwt_token}}
+
+
+
+    // TODO date
+    // var today = new Date('05 October 2011 14:48 UTC');
+    // console.log(today.toISOString()); // Devuelve 2011-10-05T14:48:00.000Z
+
+window.location.reload(false)
+
+
+icons:
+https://www.flaticon.com/packs/ecommerce-236?word=shop
+
+https://www.flaticon.com/packs/e-commerce-3?word=shop
+
+https://www.flaticon.com/packs/e-commerce-25?word=shop
+
+https://www.flaticon.com/packs/retail-9?word=shop
+
+https://www.flaticon.com/packs/food-drink-6?word=shop
+
+https://www.flaticon.com/packs/influencer-marketing-3?word=shop
+
+https://www.flaticon.com/packs/e-commerce-121?word=shop
+
+https://www.flaticon.com/packs/e-commerce-7?word=shop
+
+https://www.flaticon.com/packs/web-store?word=shop
+
+https://www.flaticon.com/packs/web-store-2?word=shop
+
+https://www.flaticon.com/packs/shopping-8?word=shop
+
+https://www.flaticon.com/packs/pet-shop-57?word=shop
+
+https://www.flaticon.com/packs/sales-16?word=shop
+
+https://www.flaticon.com/packs/pet-shop-48?word=shop
+
+https://www.flaticon.com/packs/pet-shop-75?word=shop
+
+https://www.flaticon.com/packs/pet-shop-56?word=shop
+
+https://www.flaticon.com/packs/pawn-shop-4?word=shop  -> yellow shadow
+
