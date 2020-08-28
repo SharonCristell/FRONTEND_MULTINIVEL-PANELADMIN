@@ -55,10 +55,10 @@ export default class Comission extends Component {
             showRechazar: false,
             showAceptar: false,
             showBoton: true,
-            showBigPicture: false,
+            showModalPicture: false,
+            imgModal : "",
             idTemp:0,
             isComplete: false,
-
 
         }
 
@@ -335,7 +335,7 @@ export default class Comission extends Component {
         }
         // })
     };
-
+    
     sendData= async(e, idTemp, idmembershipdetail, newVerif)=> {
        
         e.preventDefault();
@@ -344,7 +344,7 @@ export default class Comission extends Component {
             let data = {};
                      
             let  payment = {};
-
+            
             payment.idSuscription =  idTemp;
             payment.idMembershipDetail = idmembershipdetail;
             payment.verif = newVerif;
@@ -354,7 +354,7 @@ export default class Comission extends Component {
             
          
             let response = await UserService.updatePayment(data);
-
+         
             if(response !== undefined) {
                 if(response.status === 1){
                     // alert('Usuario registrado');
@@ -386,6 +386,29 @@ export default class Comission extends Component {
             showModal: true
         });
     }
+
+    //Handle close modal  image
+    onClickImage = (e, bank, data) => {
+        console.log("event modal")
+        console.log(data)
+        this.setState({
+            imgModal: this.state.imgModal = data.imagenes
+        });
+        this.handleShowPicture();
+    }
+
+    handleShowPicture = () => {
+        this.setState({
+            showModalPicture: this.state.showModalPicture = true
+        });
+    }
+
+    handleClosePicture = () => {
+        this.setState({
+            showModalPicture: this.state.showModalPicture = false
+        });
+    }
+
     render() {
         const { pendingList, loading, loadSuscription, message, message2, loadModal } = this.state;
         const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture, idTemp} = this.state;
@@ -501,7 +524,6 @@ export default class Comission extends Component {
                                         this.state.schedule.map(function (item) {
 
                                             let run;
-                                            console.log(item)
                                             return (
                                                 <tr key={item.idMembershipDetail}>
 
@@ -525,49 +547,19 @@ export default class Comission extends Component {
                                                     <td>
 
                                                         {
-                                                            item.objImagen.map(function (i) {
+                                                            item.objImagen.map((itemImg, idx) => {
 
                                                                 return (
 
                                                                     <div >
-                                                                    <Image width="50px" height="50px" key={i.id} src={`data:image/jpeg;base64,${i.imagenes}`}
-                                                                    onClick={(e) => { this.handleShow(e, 'BCP') }}>
+                                                                    <Image width="50px" height="50px" key={idx} src={`data:image/jpeg;base64,${itemImg.imagenes}`}
+                                                                     onClick={(e) => { this.onClickImage(e, 'BCP', itemImg) }}>
                                                                     
                                                                     </Image>    
-                                                                    
-                                                                    <Modal
-                                                                    size="lg"
-                                                                    show={this.state.showBigPicture}
-                                                                    onHide={this.handleClose}
-                                                                    style={{ fontSize: 12 }}
-                                                                >
-            
-            
-            
-                                                                    <Modal.Body>
-                                                                        <Form.Group>
-                                                                        <Image width="50px" height="50px" key={i.id} src={`data:image/jpeg;base64,${i.imagenes}`}
-                                                                                onClick={(e) => { this.handleShow(e, 'BCP') }}>
-                                                                                
-                                                                                </Image> 
-                                                                       
-                                                                        </Form.Group>
-            
-                                                                        <Modal.Footer>
-                                                                       
-                                                                            <Button variant="primary" onClick={this.handleClose}>
-                                                                                Cerrar
-                                                                      </Button>
-                                                                        </Modal.Footer>
-                                                                    </Modal.Body>
-                                                                </Modal>
+                                                          
                                                                 </div>
-                                                                    
-
                                                                 )
-                                                            }, this)
-
-
+                                                            })
 
                                                         }
 
@@ -589,6 +581,43 @@ export default class Comission extends Component {
                                                         
                                                     </td>
                                               
+
+                                                    <Modal
+                                                        size="lg"
+                                                        show={this.state.showRechazar}
+                                                        onHide={this.handleClose}
+                                                        style={{ fontSize: 12 }}
+                                                    >
+
+
+
+                                                        <Modal.Body>
+                                                            <Form.Group>
+
+                                                                <Form.Control as="select" defaultValue={'DEFAULT'}
+                                                                    onChange={e => this.handleSelect(e, "idMotive")}>
+                                                                    <option value="DEFAULT" disabled>Seleccionar Motivo ...</option>
+
+                                                                    {this.state.motivesList}
+                                                                </Form.Control>
+                                                                <br></br>
+                                                                <Form.Control style={{ display: this.state.showOthers, paddingTop: 6 }} type="text" placeholder="Ingrese el nuevo motivo"
+                                                                    onChange={e => this.handleMotive(e, "desMotive")}></Form.Control>
+                                                            </Form.Group>
+
+                                                            <Modal.Footer>
+                                                            <Button variant="danger" onClick={this.handleClose}>
+                                                                    Confirmar
+                                                          </Button>
+                                                                <Button variant="primary" onClick={this.handleClose}>
+                                                                    Cerrar
+                                                          </Button>
+                                                            </Modal.Footer>
+                                                        </Modal.Body>
+                                                    </Modal>
+
+
+
                                                     <Modal
                                                         size="lg"
                                                         show={this.state.showAceptar}
@@ -606,7 +635,6 @@ export default class Comission extends Component {
                                                             </Form.Group>
 
                                                             <Modal.Footer>
-                                                            { console.log(idTemp)}
                                                             <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, item.idMembershipDetail, 1) }}>
                                                                     Confirmar
                                                           </Button>
@@ -671,6 +699,32 @@ export default class Comission extends Component {
                     </Button>
                     </Modal.Footer>
 
+                </Modal>
+
+                <Modal
+                      dialogClassName="modal-90w"
+                    backdrop="static"
+                    show={this.state.showModalPicture}
+                    onHide={this.handleClosePicture}
+                    style={{ fontSize: 12 }} 
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered>
+                    <Modal.Header closeButton>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form.Group>
+                        <img  class="img-fluid" src={`data:image/jpeg;base64,${this.state.imgModal}`}
+                                /> 
+                        
+                        </Form.Group>
+
+                        <Modal.Footer>
+                        
+                            <Button variant="primary" onClick={this.handleClosePicture}>
+                                Cerrar
+                        </Button>
+                        </Modal.Footer>
+                    </Modal.Body>
                 </Modal>
 
 
