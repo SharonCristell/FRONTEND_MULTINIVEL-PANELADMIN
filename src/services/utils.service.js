@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
+//const proxyurl = "https://cors-anywhere.herokuapp.com/";
+const proxyurl = "";
 
-const API_URL = proxyurl + 'https://api.inresorts.club/api';
+const API_URL = proxyurl + 'http://45.66.156.160:60/api';
 
 class UtilService {
 
@@ -118,6 +119,22 @@ class UtilService {
             return undefined;
         });
     }
+
+    // TODO Get Tipo de Pago
+    async getTipoPago(idTipoPago) {
+         
+        let url = API_URL + "/SubTipoPago/subtipopagolist/" + idTipoPago;
+        return await fetch(url)
+        .then(res => res.json())
+        .then(response => {
+            return response;
+        })
+        .catch(error => {
+            console.log(error);
+            return undefined;
+        });
+    }
+
 
 
 }

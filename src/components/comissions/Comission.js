@@ -57,9 +57,10 @@ export default class Comission extends Component {
             showAceptar: false,
             showBoton: true,
             showModalPicture: false,
-            imgModal : "",
-            idTemp:0,
+            imgModal: "",
+            idTemp: 0,
             isComplete: false,
+            paymentList: [],
 
         }
 
@@ -71,6 +72,7 @@ export default class Comission extends Component {
         this.getDebtRegister();
         this.getPendingList();
         this.createItemTypes();
+        this.getTipoPago();
 
     }
 
@@ -126,7 +128,7 @@ export default class Comission extends Component {
 
         //this.sendData()
 
-        if (tipo=== 'Aceptar') {
+        if (tipo === 'Aceptar') {
             this.setState({
                 showAceptar: true,
 
@@ -146,12 +148,13 @@ export default class Comission extends Component {
     onShowModal = (e, item, tipo) => {
         console.log(item)
         this.setState({
-            itemAccepted : this.state.itemAccepted = item
+            itemAccepted: this.state.itemAccepted = item
         })
         this.handleShowBoton(e, tipo)
+       
     }
 
-    
+
 
     getDebtRegister = () => {
         let tags = <tr></tr>;
@@ -161,7 +164,7 @@ export default class Comission extends Component {
 
                 <tr key={item.idSuscription}>
 
-                    <td>{Validation.convertDate(new Date(item.creationDateSuscription))}</td>
+                    <td>{Validation.convertExtendedDate(new Date(item.creationDateSuscription))}</td>
                     <td>{item.username}</td>
                     <td>{item.name}</td>
                     <td>{item.lastname}</td>
@@ -212,32 +215,31 @@ export default class Comission extends Component {
             tags =
 
                 <td>
-                    <p> Neutro</p>
+                    <p> No Pagado</p>
                 </td>
 
         }
         return tags;
     }
 
-    showBotones = (i) => {
+    async getTipoPago(idTipoPago) {
 
-        console.log("event")
-        let display = false;
-     
-        if (i == 2) {
+        let pendingLists = await UtilService.getTipoPago(idTipoPago);
+        if (pendingLists !== undefined && pendingLists !== null) {
+            if (pendingLists.status !== 1) {
 
-                display= true
+                this.setState({
+                    paymentList: this.state.paymentList = [],
+                });
+            } else {
 
+                this.setState({
+                    paymentList: this.state.paymentList = pendingLists.objModel,
 
+                });
+            }
         }
 
-        
-        else if (i == 0) {
-
-            display= true
-
-        }
-        return display;
     }
 
     handleShow = (e, bank) => {
@@ -256,7 +258,7 @@ export default class Comission extends Component {
     // Handle modal 
     getSchedule = async (e, idSuscription) => {
         //e.preventDefault();
-        
+
         console.log(idSuscription);
         let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
 
@@ -265,8 +267,8 @@ export default class Comission extends Component {
                 this.setState({
                     schedule: this.state.schedule = schedule.objModel.objModel,
                     showModal: true,
-                    idTemp:this.state.idTemp = schedule.objModel.idSuscription,
-                
+                    idTemp: this.state.idTemp = schedule.objModel.idSuscription,
+
                 });
             } else {
                 this.setState({
@@ -304,7 +306,7 @@ export default class Comission extends Component {
     handleSelect = (e, field) => {
         // //console.log(e.target.value, field);
         var value = e.target.value;
-        this.setState({ [field]: value } 
+        this.setState({ [field]: value }
         )
 
 
@@ -332,56 +334,55 @@ export default class Comission extends Component {
     handleMotive = (e, field) => {
 
         var value = e.target.value;
-        this.setState({ [field]: value } 
+        this.setState({ [field]: value }
         )
     };
-    
-    sendData= async(e, idTemp, idmembershipdetail, newVerif)=> {
-       
-        e.preventDefault();      
+
+    sendData = async (e, idTemp, idmembershipdetail, newVerif) => {
+
+        e.preventDefault();
         this.setState({
-            showAceptar: this.state.showAceptar=false,
-            showRechazar: this.state.showRechazar=false,
+            showAceptar: this.state.showAceptar = false,
+            showRechazar: this.state.showRechazar = false,
+            showModal: this.state.showModal= false,
 
 
         });
-            let data = {};
-                     
-            let  payment = {};
-            
-            payment.idSuscription =  idTemp;
-            payment.idMembershipDetail = idmembershipdetail;
-            payment.verif = newVerif;
+        let data = {};
 
-            if(newVerif==3) {
-                payment.idMotivo =  this.state.idMotive;
-                payment.motivoDescription =  this.state.desMotive;
-               
+        let payment = {};
+
+        payment.idSuscription = idTemp;
+        payment.idMembershipDetail = idmembershipdetail;
+        payment.verif = newVerif;
+
+        if (newVerif == 3) {
+            payment.idMotivo = this.state.idMotive;
+            payment.motivoDescription = this.state.desMotive;
+
+        } 
+        console.log(payment)
+
+        data.payment = payment;
+
+
+        let response = await UserService.updatePayment(payment);
+
+        if (response !== undefined) {
+            if (response.status === 1) {
+                // alert('Usuario registrado');
+                this.setState({
+                    isComplete: this.state.isComplete = true
+                });
+
             } else {
-                alert('Tuvimos un problema en la validación. Inténtalo más tarde.');
+                alert("Ocurrió un error al momento de realizar la validación.");
             }
-            console.log(payment)
+        } else {
+            alert('Tuvimos un problema en la validación. Inténtalo más tarde.');
+        }
 
-            data.payment = payment;               
-            
-         
-            let response = await UserService.updatePayment(payment);
-         
-            if(response !== undefined) {
-                if(response.status === 1){
-                    // alert('Usuario registrado');
-                    this.setState({
-                        isComplete: this.state.isComplete = true
-                    });
-                    
-                } else {
-                    alert("Ocurrió un error al momento de realizar la validación.");
-                }
-            } else {
-                alert('Tuvimos un problema en la validación. Inténtalo más tarde.');
-            }
 
-        
     };
 
 
@@ -389,8 +390,10 @@ export default class Comission extends Component {
 
     handleClose = () => {
         this.setState({
-            showModal: false,
+            showModal: this.state.showModal= false,
             schedule: this.state.schedule = [],
+            showAceptar: this.state.showAceptar = false,
+            showRechazar: this.state.showRechazar = false,
         });
     }
     handleShow = () => {
@@ -422,8 +425,8 @@ export default class Comission extends Component {
     }
 
     render() {
-        const { pendingList, loading, loadSuscription, message, message2, loadModal } = this.state;
-        const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture, idTemp} = this.state;
+        const { pendingList, loading, loadSuscription, message, message2, loadModal, paymentList } = this.state;
+        const { categories, checkedListAll, ItemsChecked, selectedItems, statusText, motivesList, showBoton, showBigPicture, idTemp } = this.state;
         return (
             <div style={{ padding: 30 }}>
                 {loading &&
@@ -486,11 +489,11 @@ export default class Comission extends Component {
                             <Col sm={10}>
                                 <Row>
                                     <Col sm={2}>
-                                    <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowBoton(e, 'Aceptar') }}>Aceptar</Button>
+                                        <Button size="sm" variant="danger" onClick={(e) => { this.onShowModal(e, 'Aceptar') }}>Aceptar</Button>
 
                                     </Col>
                                     <Col sm={2}>
-                                    <Button size="sm" variant="primary"onClick={(e) => { this.handleShowBoton(e, 'Rechazar') }}>Rechazar</Button>
+                                        <Button size="sm" variant="primary" onClick={(e) => { this.onShowModal(e, 'Rechazar') }}>Rechazar</Button>
 
                                     </Col>
                                     <Col sm={8}>
@@ -509,12 +512,13 @@ export default class Comission extends Component {
                                 <thead className="table-head">
                                     <tr>
                                         <th>
+                                            Seleccionar todo
                                             <input
                                                 style={{ height: '20px', width: '20px' }}
                                                 type="checkbox"
                                                 value="checkAll"
                                                 checked={this.state.allChecked}
-                                                onChange={this.handleChange} />   Seleccionar todo
+                                                onChange={this.handleChange} />
                                         </th>
                                         <th>Descripción</th>
                                         <th>Fecha</th>
@@ -545,15 +549,72 @@ export default class Comission extends Component {
 
                                                     </td>
                                                     <td>{item.quoteDescription}</td>
-                                                    <td>{Validation.convertDate(new Date(item.initialdate))}</td>
-                                                    <td>{item.capitalBalance} USD</td>
-                                                    <td>{item.amortization} USD</td>
+                                                    <td>{Validation.convertDate(new Date(item.nextExpiration))}</td>
+
+                                                    <td>{Math.round(((item.capitalBalance) / (item.dollarExchange)) * 100) / 100} USD</td>
+                                                    <td>{Math.round(((item.amortization) / (item.dollarExchange)) * 100) / 100} USD</td>
                                                     <td>{item.interested} USD</td>
-                                                    <td>{item.quote} USD</td>
-                                                    <td>{item.score}</td>
-                                                    <td>{item.nroOperacion}</td>
+
+
+                                                    <td>
+                                                        {item.quoteUsd == 0 &&
+                                                            Math.round(((item.quote) / (item.dollarExchange)) * 100) / 100
+
+                                                        }
+
+                                                        {item.quoteUsd !== 0 &&
+                                                            item.quoteUsd
+                                                        }
+                                                         USD
+
+
+                                                    </td>
+
+
+
+                                                    <td>{item.puntaje}</td>
+                                                    <td>
+                                                        {
+                                                            item.objImagen.map((itemImg, idx) => {
+
+                                                                return (
+
+                                                                    <Row>
+                                                                        {itemImg.nroOperacion}
+
+                                                                    </Row>
+
+                                                                
+                                                                )
+                                                            })
+
+                                                        }
+
+                                                    </td>
                                                     <td>{item.titularcuenta}</td>
-                                                    <td>{item.idPayMethod}</td>
+                                                    <td>
+                                                        {
+                                                            item.objImagen.map((itemImg, idx) => {
+
+                                                                return (
+
+                                                                    this.getTipoPago(itemImg.idTipoPago),
+
+                                                                    this.state.paymentList.map((itemPago, idx) => {
+
+                                                                        return (
+
+                                                                            <Row>
+                                                                                {itemPago.descripcion}
+
+                                                                            </Row>
+                                                                        )
+                                                                    })
+                                                                )
+                                                            })
+                                                        }
+
+                                                    </td>
 
                                                     {this.getVerify(item.verif)}
 
@@ -564,13 +625,14 @@ export default class Comission extends Component {
 
                                                                 return (
 
-                                                                    <div >
-                                                                    <Image width="50px" height="50px" key={idx} src={`data:image/jpeg;base64,${itemImg.imagenes}`}
-                                                                     onClick={(e) => { this.onClickImage(e, 'BCP', itemImg) }}>
-                                                                    
-                                                                    </Image>    
-                                                          
-                                                                </div>
+                                                                    <Row>
+                                                                        <Image width="50px" height="50px" key={idx} src={`data:image/jpeg;base64,${itemImg.imagenes}`}
+                                                                            onClick={(e) => { this.onClickImage(e, 'BCP', itemImg) }}>
+
+                                                                        </Image>
+
+
+                                                                    </Row>
                                                                 )
                                                             })
 
@@ -579,61 +641,18 @@ export default class Comission extends Component {
 
                                                     </td>
 
-                                                                                                                  
+
                                                     <td>
-                                                        {item.verif  === 2 && 
+                                                        {item.verif === 2 &&
                                                             <div >
-                                                                <Button size="sm"  variant="danger"  onClick={(e) => { this.onShowModal(e, item, 'Aceptar') }}>Aceptar</Button>
-                                                            {/* <Button size="sm"  variant="danger"  onClick={(e) => { this.handleShowBoton(e, 'Aceptar') }}>Aceptar</Button> */}
+                                                                <Button size="sm" variant="danger" onClick={(e) => { this.onShowModal(e, item, 'Aceptar') }}>Aceptar</Button>
 
-                                                           
+                                                                <Button size="sm" variant="primary" onClick={(e) => { this.onShowModal(e, item, 'Rechazar') }}>Rechazar</Button>
+                                                            </div>
 
-                                                            <Button size="sm" variant="primary"onClick={(e) => { this.onShowModal(e, item,  'Rechazar')}}>Rechazar</Button>
-                                                        </div>
-                                                        
-                                                        }        
-                                                        
+                                                        }
+
                                                     </td>
-                                                        
-                                                        {/*
-
-                                                    <Modal
-                                                        size="lg"
-                                                        show={this.state.showRechazar}
-                                                        onHide={this.handleClose}
-                                                        style={{ fontSize: 12 }}
-                                                    >
-
-
-
-                                                        <Modal.Body>
-                                                            <Form.Group>
-
-                                                                <Form.Control as="select" defaultValue={'DEFAULT'}
-                                                                    onChange={e => this.handleSelect(e, "idMotive")}>
-                                                                    <option value="DEFAULT" disabled>Seleccionar Motivo ...</option>
-
-                                                                    {this.state.motivesList}
-                                                                </Form.Control>
-                                                                <br></br>
-                                                                <Form.Control style={{ display: this.state.showOthers, paddingTop: 6 }} type="text" placeholder="Ingrese el nuevo motivo"
-                                                                    onChange={e => this.handleMotive(e, "desMotive")}></Form.Control>
-                                                            </Form.Group>
-
-                                                            <Modal.Footer>
-                                                            <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, item.idMembershipDetail, 3) }}>
-                                                                    Confirmar
-                                                          </Button>
-                                                                <Button variant="primary" onClick={this.handleClose}>
-                                                                    Cerrar
-                                                          </Button>
-                                                            </Modal.Footer>
-                                                        </Modal.Body>
-                                                    </Modal>
-                                                    <td>{item.obs}</td>
-                                                     */}
-
-
 
 
                                                 </tr>
@@ -644,7 +663,6 @@ export default class Comission extends Component {
                             </Table>
                         </Col></Row>
 
-
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={this.handleClose}>
@@ -653,27 +671,27 @@ export default class Comission extends Component {
                     </Modal.Footer>
 
                 </Modal>
-                
+
                 {/* Modal to show images */}
                 <Modal
-                      dialogClassName="modal-90w"
+                    dialogClassName="modal-90w"
                     backdrop="static"
                     show={this.state.showModalPicture}
                     onHide={this.handleClosePicture}
-                    style={{ fontSize: 12 }} 
+                    style={{ fontSize: 12 }}
                     aria-labelledby="contained-modal-title-vcenter"
                     centered>
                     <Modal.Header closeButton>
                     </Modal.Header>
                     <Modal.Body>
                         <Form.Group>
-                        <img  class="img-fluid" src={`data:image/jpeg;base64,${this.state.imgModal}`}
-                                /> 
-                        
+                            <img class="img-fluid" src={`data:image/jpeg;base64,${this.state.imgModal}`}
+                            />
+
                         </Form.Group>
 
                         <Modal.Footer>
-                        
+
                             <Button variant="primary" onClick={this.handleClosePicture}>
                                 Cerrar
                         </Button>
@@ -702,7 +720,7 @@ export default class Comission extends Component {
                         </Form.Group>
 
                         <Modal.Footer>
-                        <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, this.state.itemAccepted.idMembershipDetail, 3) }}>
+                            <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, this.state.itemAccepted.idMembershipDetail, 3) }}>
                                 Confirmar
                         </Button>
                             <Button variant="primary" onClick={this.handleClose}>
@@ -720,13 +738,13 @@ export default class Comission extends Component {
                 >
                     <Modal.Body>
                         <Form.Group>
-                        <Form.Label className="content-subtitle">¿Desea confirmar la aceptación del voucher?</Form.Label>                                                            
-                            
-                        
+                            <Form.Label className="content-subtitle">¿Desea confirmar la aceptación del voucher?</Form.Label>
+
+
                         </Form.Group>
 
                         <Modal.Footer>
-                        <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, this.state.itemAccepted.idMembershipDetail, 1) }}>
+                            <Button variant="danger" onClick={(e) => { this.sendData(e, idTemp, this.state.itemAccepted.idMembershipDetail, 1) }}>
                                 Confirmar
                         </Button>
                             <Button variant="primary" onClick={this.handleClose}>
