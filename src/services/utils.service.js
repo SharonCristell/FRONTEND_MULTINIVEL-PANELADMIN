@@ -135,6 +135,21 @@ class UtilService {
         });
     }
 
+    async getTypePayment() {
+        let url = API_URL + "/TipoPago/listTipoPago";
+        
+        return await fetch(url)
+        .then(res => res.json())
+        .then(response => {
+            return response;
+        })
+        .catch(error => {
+            //console.log(error);
+            return undefined;
+        });
+
+    }
+
 
 
 }

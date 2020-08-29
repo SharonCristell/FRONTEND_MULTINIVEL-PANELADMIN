@@ -70,7 +70,7 @@ export default class Comission extends Component {
 
     componentDidMount() {
         this.getDebtRegister();
-        this.getPendingList();
+        this.getPendingList()
         this.createItemTypes();
         this.getTipoPago();
 
@@ -222,24 +222,45 @@ export default class Comission extends Component {
         return tags;
     }
 
-    async getTipoPago(idTipoPago) {
+    async getTipoPago() {
 
-        let pendingLists = await UtilService.getTipoPago(idTipoPago);
+        let pendingLists = await UtilService.getTypePayment();
         if (pendingLists !== undefined && pendingLists !== null) {
             if (pendingLists.status !== 1) {
-
+                
                 this.setState({
                     paymentList: this.state.paymentList = [],
                 });
             } else {
-
+                let tempList = pendingLists.objModel;
+                let temp = []
+                // console.log(tempList)
+                tempList.forEach(element => {
+                    temp = temp.concat(element.subTipoPagos);
+                });
+                
                 this.setState({
-                    paymentList: this.state.paymentList = pendingLists.objModel,
+                    paymentList: this.state.paymentList = temp,
 
                 });
             }
         }
 
+    }
+
+    getDescriptionType = (idSubtipo) => {
+        // console.log(idSubtipo)
+        let tempList  = this.state.paymentList;
+        // console.log(tempList)
+        let des = '';
+
+        tempList.forEach(element => {
+            if(element.idSubTipoPago === idSubtipo) {
+                des = element.descripcion
+            }
+        });
+
+        return des;
     }
 
     handleShow = (e, bank) => {
@@ -579,10 +600,10 @@ export default class Comission extends Component {
 
                                                                 return (
 
-                                                                    <Row>
+                                                                    (<Row>
                                                                         {itemImg.nroOperacion}
-
-                                                                    </Row>
+                                                                        <hr></hr>
+                                                                    </Row>)
 
                                                                 
                                                                 )
@@ -595,23 +616,14 @@ export default class Comission extends Component {
                                                     <td>
                                                         {
                                                             item.objImagen.map((itemImg, idx) => {
-
+                                                                console.log("hola")
+                                                                let description = this.getDescriptionType(Number(itemImg.idPayMethod));
                                                                 return (
-
-                                                                    this.getTipoPago(itemImg.idTipoPago),
-
-                                                                    this.state.paymentList.map((itemPago, idx) => {
-
-                                                                        return (
-
-                                                                            <Row>
-                                                                                {itemPago.descripcion}
-
-                                                                            </Row>
-                                                                        )
-                                                                    })
-                                                                )
-                                                            })
+                                                                    (<Row>
+                                                                        {description}
+                                                                        <hr></hr>
+                                                                    </Row>)
+                                                            )})
                                                         }
 
                                                     </td>
