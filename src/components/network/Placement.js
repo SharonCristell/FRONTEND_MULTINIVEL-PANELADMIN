@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Table, Button, Spinner } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Autosuggest from 'react-autosuggest';
 
 import Validation from '../utils/Validation';

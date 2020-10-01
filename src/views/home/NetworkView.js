@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form, Tabs, Tab } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import NetComponent from '../../components/network/NetComponent';
 import Placement from '../../components/network/Placement';

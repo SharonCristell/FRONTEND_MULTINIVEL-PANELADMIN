@@ -2,7 +2,7 @@ import  React, { Component } from 'react';
 import { Button, Form, Spinner, 
         Table, Accordion, Card, 
         InputGroup, FormControl} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+        import 'bootstrap/dist/css/bootstrap.min.css';
 
 import UtilService from '../../services/utils.service';
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Form, InputGroup,
      Col, Row, Spinner, Image,
     Button, FormControl } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+    import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from '../../images/paypal-logo.png';
 
 export default class StepPayment extends Component {

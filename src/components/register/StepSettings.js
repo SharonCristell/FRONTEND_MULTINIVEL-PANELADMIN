@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Form, Card, Dropdown, Row, Col } from 'react-bootstrap' 
-import  'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Setting
 export default class StepSettings extends Component {

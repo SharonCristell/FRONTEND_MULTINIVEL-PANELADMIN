@@ -5,48 +5,13 @@ const proxyurl = "https://cors-anywhere.herokuapp.com/";
 const API_URL = proxyurl + 'https://api.inresorts.club/api';
 const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
+//const proxyurl = "";
+//const API_URL = proxyurl + 'http://45.66.156.160:60/api';
+//const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+
 class AuthService {
 
   async login(data) {
-
-    let url = API_URL + "/token";
-    return await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => res.json())
-      .then(response => {
-        console.log(response);
-        if (response.access_Token !== null) {
-          // console.log("login");
-          // Decoder token information
-          let jwt = require("jsonwebtoken");
-          let decode = jwt.decode(response.access_Token);
-          // console.log(decode);
-          let idUser = decode.primarysid;
-          // Saveinformation
-          sessionStorage.setItem("id", idUser);
-          sessionStorage.setItem("user", JSON.stringify(response));
-          sessionStorage.setItem("islogged", true);
-          sessionStorage.setItem("key", data.password);
-          sessionStorage.setItem("name", decode.unique_name)
-        
-          let userInfo = this.getUserInformation(idUser);
-
-        }
-        return response;
-
-      })
-      .catch(error => {
-        console.log(error);
-        return undefined;
-      });
-  }
-
-  async loginAdmin(data) {
 
     let url = API_URL + "/token/tokenpanel";
     return await fetch(url, {
@@ -58,22 +23,27 @@ class AuthService {
     })
       .then(res => res.json())
       .then(response => {
-        console.log(response);
+        //console.log(response);
         if (response.access_Token !== null) {
           // console.log("login");
           // Decoder token information
           let jwt = require("jsonwebtoken");
           let decode = jwt.decode(response.access_Token);
           // console.log(decode);
-          let idUser = decode.primarysid;
-          // Saveinformation
-          sessionStorage.setItem("id", idUser);
-          sessionStorage.setItem("user", JSON.stringify(response));
-          sessionStorage.setItem("islogged", true);
-          sessionStorage.setItem("key", data.password);
-          sessionStorage.setItem("name", decode.unique_name)
-          sessionStorage.setItem("role", data.roles)
-          let userInfo = this.getUserInformation(idUser);
+          console.log(decode.primarysid);
+          if (decode.primarysid== "12853") {
+            let idUser = decode.primarysid;
+            // Saveinformation
+            sessionStorage.setItem("id", idUser);
+            sessionStorage.setItem("user", JSON.stringify(response));
+            sessionStorage.setItem("islogged", true);
+            sessionStorage.setItem("key", data.password);
+            sessionStorage.setItem("name", decode.unique_name)
+            sessionStorage.setItem("role", data.roles)
+            let userInfo = this.getUserInformation(idUser);
+          }
+          sessionStorage.setItem("islogged", false);
+          //sessionStorage.setItem("user", null);
 
         }
         return response;
@@ -85,6 +55,38 @@ class AuthService {
       });
   }
 
+
+  // Login for admin see others profile
+  async loginAdmin(data) {
+
+    let url = API_URL + "/token/admin";
+    return await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      // headers: headers
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then(res => res.json())
+      .then(response => {
+        //console.log(response);
+        if (response.access_Token !== null) {
+          // //console.log("login");
+          // Decoder token information
+          let jwt = require("jsonwebtoken");
+          let decode = jwt.decode(response.access_Token);
+          response.idUser = decode.primarysid;
+
+        }
+        return response;
+
+      })
+      .catch(error => {
+        //console.log(error);
+        return undefined;
+      });
+  }
 
   async updatePassword(objUser) {
     let url_update = API_USR + "/" + "modifypassword";
@@ -146,6 +148,24 @@ class AuthService {
     }
 
   }
+  async getUserInformationAsync(idUser) {
+  
+    let url_info = API_USR + "/" + idUser; 
+    return await fetch(url_info)
+      .then(res => res.json())
+      .then(response => {
+        sessionStorage.setItem("info", JSON.stringify(response));
+        sessionStorage.setItem("id", idUser);
+        return response;
+      })
+      .catch(error => {
+          //console.log(error);
+          sessionStorage.setItem("info", "");
+          return undefined;
+      });
+  
+  
+}
 
   async executeRecoveryPass(token) {
     let url = API_URL + "/User/ExecuteRecovery/?token=" + token;
@@ -195,23 +215,18 @@ class AuthService {
     return sessionStorage.getItem('name');
   }
 
-  
+
   getIsLogged() {
+    //console.log(sessionStorage.getItem('user'));
     if (sessionStorage.getItem('user')) {
       return true;
-    }
+      
+    } 
     return false;
+    
   }
-  
-  getIsAuthorized() {
 
-    var obj = sessionStorage.getItem('roles')
-
-    if (obj.id==1) {
-      return true;
-    }
-    return false;
-  }
+ 
 
 }
 

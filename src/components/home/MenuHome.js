@@ -100,7 +100,7 @@ export default class MenuHome extends Component {
         return (
             <div className="menu-content">
                         <Row>
-                            <Col sm={1}></Col>
+                            
                              {/* 
                             <Col xs={2} sm={2}>
                               <div className="menu-item">
@@ -122,11 +122,20 @@ export default class MenuHome extends Component {
                             </Col>
                              */}
                             
-                            <Col  xs={2} sm={2}>
+                            <Col  xs={3} sm={2}>
                               <div className="menu-item">
                                 <a onClick={() => this.hideComponent("showMenuPay")}>
                                 <Image className="col-image" src={icon3} ></Image>
-                                <p >Pagos</p>
+                                <p >Pagos Iniciales</p>
+                                </a>
+                              </div>
+                            </Col>
+
+                            <Col  xs={2} sm={2}>
+                              <div className="menu-item">
+                                <a onClick={() => this.hideComponent("showMenuNet")}>
+                                <Image className="col-image" src={icon3} ></Image>
+                                <p >Pagos Pendientes</p>
                                 </a>
                               </div>
                             </Col>
@@ -147,7 +156,7 @@ export default class MenuHome extends Component {
                                 </a>
                                 </div>
                             </Col>
-                            <Col sm={1}></Col>
+                       
                         </Row>
                     </div>
                     

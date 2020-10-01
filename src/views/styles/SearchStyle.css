@@ -1,0 +1,17 @@
+.search{
+    border:2px solid #7b7b7b;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .search-title{
+    font-size: 12px;
+    width:80px;
+    margin-top:-16px;
+    margin-left: 10px;
+    background:white;
+    text-align: center;
+  
+  }

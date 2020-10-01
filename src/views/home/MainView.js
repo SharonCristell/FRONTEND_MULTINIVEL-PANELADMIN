@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Form, Carousel, Row, Col, Card, Table, Spinner} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import State from '../../components/home/State';
 import Range from '../../components/home/Range';
 import RangeNext from '../../components/home/RangeNext';

@@ -49,3 +49,7 @@
 .navbar-nav .dropdown-menu .dropdown-item:hover {
     color: #f2931d;
 }
+.nav-item.active {
+    color: #e9ecef;
+    background: #27b3b3 !important;
+}

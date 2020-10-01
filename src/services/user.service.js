@@ -1,9 +1,13 @@
 import authHeader from './auth-header';
 import AuthService from './auth.service';
 
-const proxyurl = "";
-const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
-const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
+
+//const proxyurl = "";
+//const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
+//const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
+const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
 
 class UserService {
@@ -376,12 +380,14 @@ class UserService {
           });
     }
 
-    async updatePayment(data) {
+    // Accept Payment
+
+    async acceptPayment(data) {
 
 
         //let url= API_URL + "schedule/update";
 
-        let url= API_URL + "membershipPayDetail/schedule/update";
+        let url= API_URL + "membershipPayDetail/acceptpayment";
 
         return await fetch(url, {
           method:'POST',
@@ -403,6 +409,154 @@ class UserService {
           });
     }
 
+    // Reject Payment
+
+    async rejectPayment(data) {
+
+
+        //let url= API_URL + "schedule/update";
+
+        let url= API_URL + "membershipPayDetail/declinepayment";
+
+        return await fetch(url, {
+          method:'POST',
+          body: JSON.stringify(data),
+          headers:{
+              'Content-Type':'application/json'
+          }
+          })
+          .then(function(response) {
+              return response.json();
+          })
+          .then(function(dataJson) {
+              
+              return dataJson;
+          })
+          .catch(function(err) {
+              console.error(err);
+              return undefined;
+          });
+    }
+
+       // Accept List Payment
+
+       async acceptListPayment(data) {
+
+
+        //let url= API_URL + "schedule/update";
+
+        let url= API_URL + "membershipPayDetail/acceptpayments";
+
+        return await fetch(url, {
+          method:'POST',
+          body: JSON.stringify(data),
+          headers:{
+              'Content-Type':'application/json'
+          }
+          })
+          .then(function(response) {
+              return response.json();
+          })
+          .then(function(dataJson) {
+              
+              return dataJson;
+          })
+          .catch(function(err) {
+              console.error(err);
+              return undefined;
+          });
+    }
+
+    // Reject List Payment
+
+    async rejectListPayment(data) {
+
+
+        //let url= API_URL + "schedule/update";
+
+        let url= API_URL + "membershipPayDetail/declinepayments";
+
+        return await fetch(url, {
+          method:'POST',
+          body: JSON.stringify(data),
+          headers:{
+              'Content-Type':'application/json'
+          }
+          })
+          .then(function(response) {
+              return response.json();
+          })
+          .then(function(dataJson) {
+              
+              return dataJson;
+          })
+          .catch(function(err) {
+              console.error(err);
+              return undefined;
+          });
+    }
+    // get list user with filters
+    async getListUserSearchAdmin(data) {
+
+        let url = API_URL + "User/getListUsersOfAdmin/search";
+       
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+    // List users for admin
+    async getListUserForAdmin(data) {
+
+        let url = API_URL + "User/getListUsersOfAdmin";
+       
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+    //Get suscripciotns  for admin
+    async getSuscriptionByUserAdmin(idUser) {
+
+        let url = API_URL + "suscription/admin/user/" + idUser;
+        return await fetch(url)
+            .then(res => res.json())
+            .then(response => {
+                return response;
+            })
+            .catch(error => {
+                //console.log(error);
+                return undefined;
+            });
+    }
+
+     
 
 
 }

@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "inresortsadmin",
-    "admin": "inresortsadmin"
+    "admin": "inresortsadmin",
+    "admintest": "inresortadmintest"
   }
 }

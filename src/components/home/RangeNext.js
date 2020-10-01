@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import  { Form, Row, Col} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import img1 from '../../images/assets/oro.png';
 import img2 from '../../images/assets/plata.png';
 import img3 from '../../images/assets/zafiro.png';

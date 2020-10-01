@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Tabs, Tab, Row, Col, Table, Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+//import '../pendingpayment/node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 export default class ManageActivation extends Component {
 

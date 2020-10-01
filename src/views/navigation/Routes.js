@@ -9,11 +9,18 @@ import HomeView from '../home/HomeView';
 
 import history from './history';
 import RegisterEndView from "../login/RegisterEndView";
-import TreeView from "../tree/TreeView";
 import AccountView from "../login/AccountView";
 import InitView from "../home/InitView";
+import PaymentView from "../home/PayView";
+import MailView from "../home/MailView";
+import PendingPaymentView from "../home/PendingPaymentView";
+import DocumentationView from "../home/DocumentationView";
+import UploadDocumentsView from "../home/UploadDocumentsView";
+import RegisterView from "../home/RegisterView";
+import LoginBackView from "../login/LoginBackView";
 import NavBar from '../navigation/NavBar';
 import PasswordView from "../config/PasswordView";
+import HomeGuestView from '../home/HomeGuestView';
 
 import AuthService from '../../services/auth.service';
 export default class Routes extends Component {
@@ -21,32 +28,36 @@ export default class Routes extends Component {
         super(props);
         this.state = {
             isLogged: false,
-            isAuthorized:false,
+           
         }
     }
 
-    handleLogged = (isLogged, isAuthorized) => {
-        console.log("route:", isLogged);
-        if(!isLogged && isAuthorized ){
+    handleLogged = (isLogged) => {
+        console.log("route:", this.state.isLogged);
+        if(!this.state.isLogged){
             let isLoggedStorage= AuthService.getIsLogged();
-            let isAuthorizedStorage= AuthService.getIsAuthorized();
-
-            if(isLoggedStorage && isAuthorized){
+            console.log(isLoggedStorage)
+            if(isLoggedStorage){
                 isLogged = true;
-                isAuthorized=true;
+            }
+            else{
+                isLogged = false;
             }
         }
         this.setState({
-            isLogged: this.state.isLogged = isLogged,
-            isAuthorized: this.state.isAuthorized = isAuthorized
+            isLogged: this.state.isLogged = isLogged
         });
     }
     render() {
-        const { isLogged, isAuthorized } = this.state;
+        const { isLogged} = this.state;
+        console.log(isLogged)
+ 
         const LoginPage = (props) => {
             return (
+                
               <LoginView 
                 isLogged={this.handleLogged}
+                
               />
             );
           }
@@ -61,9 +72,16 @@ export default class Routes extends Component {
                     <RouteProtected path="/sign-up" component={RegisterMainView} />
                     <Route path="/reset" component={ResetView} />
                     <RouteProtected path="/home" component={HomeView}/>
-                    <RouteProtected path="/tree" component={TreeView} />
                     <RouteProtected path="/profile" component={AccountView} />
                     <RouteProtected path="/password" component={PasswordView} />
+                    <RouteProtected path="/initialpayment" component={PaymentView} />
+                    <RouteProtected path="/pendingpayment" component={PendingPaymentView} />
+                    <RouteProtected path="/mailing" component={MailView} />
+                    <RouteProtected path="/documentation" component={DocumentationView} />
+                    <RouteProtected path="/registered" component={RegisterView} />
+                    <RouteProtected path="/uploadDocuments" component={UploadDocumentsView} />
+                    <RouteProtected path="/loginBack" component={LoginBackView} />
+                    <Route path="/guest" component={HomeGuestView}></Route>
                     <RouteProtected path="/" component={LoginPage} />
                 </Switch>
             </Router>

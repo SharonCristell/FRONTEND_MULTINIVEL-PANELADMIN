@@ -51,23 +51,28 @@ export default class Login extends Component {
             password: this.state.password
         };
 
-        let response = await AuthService.loginAdmin(data);
+        let response = await AuthService.login(data);
         if (response === undefined) {
             alert('Ocurrió un problema. Inténtelo más tarde.');
 
         } else {
             if (response.access_Token !== null) {
-                if (this.props.isLogged && this.props.isAuthorized) {
+                if (this.props.isLogged) {
                     this.props.isLogged(true);
-                    this.props.isAuthorized(true);
+                    history.push("/home")
+
                 }
-                history.push("/home")
+                
+                else {
+                    alert('Usuario y/o contraseña incorrecto. No tiene permisos de acceso al sistema.');
+                }
+
             } else {
-                if (this.props.isLogged && this.props.isAuthorized) {
+                if (this.props.isLogged) {
                     this.props.isLogged(false);
-                    this.props.isAuthorized(false);
+
                 }
-                alert('Usuario y/o contraseña incorrecto.');
+                alert('Usuario y/o contraseña incorrecto. No tiene permisos de acceso al sistema.');
 
             }
         }
