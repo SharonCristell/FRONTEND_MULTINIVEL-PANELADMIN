@@ -75,8 +75,6 @@ export default class NavBar extends Component {
 
     }
 
-
-
     // Handle modal logout
     handleClose = (e) => {
         this.setState({
