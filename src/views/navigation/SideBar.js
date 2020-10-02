@@ -6,10 +6,10 @@ import { BsCreditCard, BsBellFill, BsQuestionSquareFill } from 'react-icons/bs';
 import { FaUserCircle } from 'react-icons/fa'
 
 import Account from '../../components/user/Account';
-import history from '../navigation/history';
+import history from './history';
 import logo_nav from '../../images/navologo.png';
 import '../styles/Custom.css';
-import Content from "../navigation/Content";
+import Content from "./Content";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,6 +32,9 @@ import '../styles/Navbar.css';
 // Test
 const linkMail = 'https://inresorttest.web.app/register-payment'
 const linkServer = 'https://inresorttest.web.app'
+const local = 'http://localhost:3001'
+
+
 
 export default class NavBar extends Component {
 
