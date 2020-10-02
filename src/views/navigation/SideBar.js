@@ -32,9 +32,6 @@ import '../styles/Navbar.css';
 // Test
 const linkMail = 'https://inresorttest.web.app/register-payment'
 const linkServer = 'https://inresorttest.web.app'
-const local = 'http://localhost:3001'
-
-
 
 export default class NavBar extends Component {
 
@@ -74,8 +71,6 @@ export default class NavBar extends Component {
         window.open (this.state.link);
 
     }
-
-
 
     // Handle modal logout
     handleClose = (e) => {
