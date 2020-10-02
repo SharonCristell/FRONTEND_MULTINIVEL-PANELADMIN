@@ -6,10 +6,10 @@ import { BsCreditCard, BsBellFill, BsQuestionSquareFill } from 'react-icons/bs';
 import { FaUserCircle } from 'react-icons/fa'
 
 import Account from '../../components/user/Account';
-import history from './history';
+import history from '../navigation/history';
 import logo_nav from '../../images/navologo.png';
 import '../styles/Custom.css';
-import Content from "./Content";
+import Content from "../navigation/Content";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
