@@ -14,7 +14,7 @@ import MenuHome from '../../components/home/MenuHome';
 import PendingPaymentView from './PendingPaymentView';
 import MailView from './MailView';
 import PayView from './PayView';
-import Sidebar from "../navigation/Sidebar";
+import Sidebar from "../navigation/SideBar";
 import Content from "../navigation/Content";
 
 
