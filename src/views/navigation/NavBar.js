@@ -10,7 +10,7 @@ import history from  '../navigation/history';
 import logo_nav from '../../images/navologo.png';
 import '../styles/Custom.css';
 
-import Sidebar from "../navigation/Sidebar";
+import Sidebar from "./Sidebar";
 import Content from "../navigation/Content";
 import '../styles/Navbar.css';
 // // Production
