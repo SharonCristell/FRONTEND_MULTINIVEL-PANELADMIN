@@ -134,11 +134,12 @@ export default class NavBar extends Component {
                 <Navbar bg="light" expand="lg" className="flex-column">
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/initialpayment")}>Pagos Iniciales</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/pendingpayment")}>Pagos Pendientes</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/quotepayment")}>Pagos Cuotas</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/mailing")}>Envio Correos</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/documentation")}>Corregir datos y documentos</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/registered")}>Socios Registrados</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/uploadDocuments")}>Carga de Archivos</Nav.Link>
-                {/*<Nav.Link href="" onClick={e => this.handleShowLogin(e)}>Entrar BackOffice Socios</Nav.Link>*/}
+                    
                 </Navbar>
 
             </div>

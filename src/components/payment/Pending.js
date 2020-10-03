@@ -10,7 +10,7 @@ import UserService from '../../services/user.service';
 import '../../views/styles/ModalCustom.css';
 
 
-export default class PendingPayment extends Component {
+export default class Pending extends Component {
 
     constructor(props) {
         super(props);

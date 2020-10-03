@@ -11,9 +11,9 @@ import history from '../navigation/history';
 import MainView from './MainView';
 import RegisterMainView from '../login/RegisterMainView';
 import MenuHome from '../../components/home/MenuHome';
-import PendingPaymentView from './PendingPaymentView';
+import PendingPaymentView from '../payment/PendingPayView';
 import MailView from './MailView';
-import PayView from './PayView';
+import PayView from '../payment/InitialPayView';
 import Sidebar from "../navigation/SideBar";
 import Content from "../navigation/Content";
 
