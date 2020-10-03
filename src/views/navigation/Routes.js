@@ -11,9 +11,13 @@ import history from './history';
 import RegisterEndView from "../login/RegisterEndView";
 import AccountView from "../login/AccountView";
 import InitView from "../home/InitView";
-import PaymentView from "../home/PayView";
+
 import MailView from "../home/MailView";
-import PendingPaymentView from "../home/PendingPaymentView";
+
+import InitialPayView from "../payment/InitialPayView";
+import PendingPayView from "../payment/PendingPayView";
+import QuotePayView from "../payment/QuotePayView";
+
 import DocumentationView from "../home/DocumentationView";
 import UploadDocumentsView from "../home/UploadDocumentsView";
 import RegisterView from "../home/RegisterView";
@@ -74,8 +78,9 @@ export default class Routes extends Component {
                     <RouteProtected path="/home" component={HomeView}/>
                     <RouteProtected path="/profile" component={AccountView} />
                     <RouteProtected path="/password" component={PasswordView} />
-                    <RouteProtected path="/initialpayment" component={PaymentView} />
-                    <RouteProtected path="/pendingpayment" component={PendingPaymentView} />
+                    <RouteProtected path="/initialpayment" component={InitialPayView} />
+                    <RouteProtected path="/pendingpayment" component={PendingPayView} />
+                    <RouteProtected path="/quotepayment" component={QuotePayView} />
                     <RouteProtected path="/mailing" component={MailView} />
                     <RouteProtected path="/documentation" component={DocumentationView} />
                     <RouteProtected path="/registered" component={RegisterView} />

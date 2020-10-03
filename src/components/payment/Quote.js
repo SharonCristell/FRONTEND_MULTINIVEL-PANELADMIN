@@ -11,7 +11,7 @@ import UserService from '../../services/user.service';
 import { Checkbox } from "semantic-ui-react";
 
 import '../../views/styles/ModalCustom.css';
-export default class Comission extends Component {
+export default class Quote extends Component {
 
     constructor(props) {
         super(props);
@@ -353,7 +353,7 @@ export default class Comission extends Component {
     getSchedule = async (e, idSuscription) => {
         console.log(idSuscription)
         //e.preventDefault();
-        let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
+        let schedule = await UtilService.getScheduleQuotePendingList(idSuscription);
 
         if (schedule !== undefined && schedule !== null) {
             if (schedule.status == 1) {

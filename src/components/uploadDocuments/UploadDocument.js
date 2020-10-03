@@ -1,147 +1,252 @@
-import React, { Component } from 'react';
-import { Image, InputGroup, Card, Input, Form, Container, Table, Button, Row, Modal, Spinner, Col } from 'react-bootstrap';
-import icon1 from '../../images/icons/blue-check.png';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Validation from '../utils/Validation';
+import React, { Component } from "react";
+import { Form, Table, Button, Modal, Row, Col, Spinner } from 'react-bootstrap';
+
+import CSVReader from 'react-csv-reader'
 import UtilService from '../../services/utils.service';
-import UserService from '../../services/user.service';
-import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 
-import '../../views/styles/ModalCustom.css';
-
-import '../../views/styles/ExcelStyle.css';
-
-export default class UploadDocument extends Component {
+export default class UploadDocumentView extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isOpen: false,
-            dataLoaded: false,
-            isFormInvalid: false,
-            rows: null,
-            cols: null,
-            messageDoc:"",
-
-
+            registers: [],
+            loading: false,
+            noData: false,
+            noDataMessage: "",
+            nameFile: '',
+            idBank: -1,
 
         }
-        this.fileHandler = this.fileHandler.bind(this);
-        this.toggle = this.toggle.bind(this);
-        this.openFileBrowser = this.openFileBrowser.bind(this);
-        this.renderFile = this.renderFile.bind(this);
-        this.openNewPage = this.openNewPage.bind(this);
-        this.fileInput = React.createRef();
     }
 
-    renderFile = (fileObj) => {
-        //just pass the fileObj as parameter
-        ExcelRenderer(fileObj, (err, resp) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                this.setState({
-                    dataLoaded: true,
-                    cols: resp.cols,
-                    rows: resp.rows
-                });
-            }
-        });
-    }
-
-    fileHandler = (event) => {
-        if (event.target.files.length) {
-            let fileObj = event.target.files[0];
-            let fileName = fileObj.name;
-
-
-            //check for file extension and pass only if it is .xlsx and display error message otherwise
-            if (fileName.slice(fileName.lastIndexOf('.') + 1) === "xlsx") {
-                this.setState({
-                    uploadedFileName: fileName,
-                    isFormInvalid: false,
-                    messageDoc:"",
-                    
-                });
-                this.renderFile(fileObj)
-            }
-            else {
-                this.setState({
-                    isFormInvalid: true,
-                    uploadedFileName: "",                   
-                    messageDoc:"El archivo ingresado no es válido. Por favor, ingrese un archivo xlsx."
-                })
-            }
-        }
-    }
-
-    toggle() {
+    handleChange = (e, field) => {
+        let value = e.target.value;
         this.setState({
-            isOpen: !this.state.isOpen
+            [field]: this.state[field] = value
+        });
+    };
+
+    loadCSV = (data, fileInfo) => {
+
+        let registers = [];
+        let flag = false;
+        for (let i = 0; i < data.length; i++) {
+            let array = data[i]; // each list have 24 register convert to obje
+            let register = {};
+
+            if (array.length === 11) {
+
+                if (flag) {
+                    register.fecha = array[0];
+                    register.fechaDeOperacion = array[0];
+                    register.fechaDeOperacion = array[1];
+                    register.detalle = array[2];
+                    register.monto = array[3].replace(",", "");
+                    register.saldo = array[4].replace(",", "");
+                    register.sucursal = array[5];
+                    register.nroOperacion = array[6];
+                    register.opHora = array[7];
+                    register.usuario = array[8];
+                    register.utc = array[9];
+                    register.ref = array[10];
+
+
+                    registers.push(register);
+                } else {
+                    // change flag  fins firt field and ignore
+                    let field = array[0].toUpperCase()
+
+                    flag = field.includes("FECHA");
+                }
+
+            }
+        }
+
+        this.setState({
+            registers: this.state.registers = registers,
+            nameFile: fileInfo.name
         });
     }
 
-    openFileBrowser = () => {
-        this.fileInput.current.click();
-    }
+    save = async (e) => {
 
-    openNewPage = (chosenItem) => {
-        const url = chosenItem === "github" ? "https://github.com/ashishd751/react-excel-renderer" : "https://medium.com/@ashishd751/render-and-display-excel-sheets-on-webpage-using-react-js-af785a5db6a7";
-        window.open(url, '_blank');
+        // Verify the name of file
+        if (this.state.nameFile.length > 0) {
+            if (this.state.registers.length > 0) {
+                if (this.state.idBank >  0) {
+                    let data = {
+                        nameoffile: "test"
+                    }
+                    let registers = [];
+
+                    for (let i = 0; i < this.state.registers.length; i++) {
+                        let temp = {
+                            fecha: this.state.registers[i].fecha,
+                            fechaDeproceso: this.state.registers[i].fecha,
+                            nroOperacion: this.state.registers[i].nroOperacion,
+                            detalle: this.state.registers[i].detalle,
+                            monto: Number(this.state.registers[i].monto),
+                            idBank: Number(this.state.idBank),
+                        }
+                        registers.push(temp);
+                    }
+
+                    data.operationfrombank = registers;
+                    console.log(data)
+                    let response = await UtilService.saveOperation(data);
+                    console.log(response)
+                    if (response !== undefined) {
+                        if (response.status === 1) {
+                            alert('Archivo cargado con éxito.');
+                            window.location.reload();
+
+                        } else {
+                            alert("Ocurrió un error al momento de guardar..");
+                        }
+                    } else {
+                        alert('Tuvimos un problema. Inténtalo más tarde.');
+                    }
+                }
+                else {
+                    alert('Seleccione el banco asociado al archivo.');
+                }
+            } else {
+                alert('No hay registros a guardar.');
+            }
+
+        } else {
+            alert('Ingrese nombre de archivo.');
+        }
+
+
     }
+    handleBank = (e, field) => {
+        console.log(e.target.value, field);
+        var value = e.target.value;
+        this.setState({ [field]: value }, () => {
+            if (this.props.onChange) {
+                this.props.onChange(value, field);
+            }
+        });
+
+    };
 
 
     render() {
-        
+
+        const { loading, registers, noData, noDataMessage, nameFile } = this.state;
+
+
         return (
-            <div className="panel-form">
-                <Container>
-                    <Form>
+            <div className="home-container" style={{ textAlign: 'left' }}>
+                <Row>
+                    <Col sm={4}>
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Ingrese nombre de archivo</Form.Label>
+                            <Form.Control type="text"
+                                placeholder="Ingrese nombre de archivo"
+                                value={nameFile}
+                                onChange={e => this.handleChange(e, "nameFile")} />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={4}>
+                        <Form.Label>Seleccione documento(.csv)</Form.Label>
+                        {/* <Button size="sm" variant="dark" 
+                            onClick={(e) => {this.loadCsv()}}>Cargar csv</Button> */}
+                        <CSVReader onFileLoaded={(data, fileInfo) => this.loadCSV(data, fileInfo)} />
 
-                        <Form.Label>Subir archivo bancario *</Form.Label>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm={6}>
+                        <Form.Group>
+                            <Form.Label> <h6>Antes de Guardar el Archivo, seleccione un Banco Asociado *</h6></Form.Label>
 
-                        <Col xs={4} sm={8} lg={10}>
-                            <Form.Group>
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>Nombre del Banco *</Form.Label>
+
+                            <Form.Control as="select" defaultValue={'DEFAULT'}
+                                onChange={e => this.handleBank(e, "idBank")}>
+                                <option value="DEFAULT" disabled>Seleccione una opción</option>
+                                <option value="1" >BCP</option>
+                                <option value="2">Interbank</option>
+
+                            </Form.Control>
+                        </Form.Group>
 
 
-                                <InputGroup>
-                                    <InputGroup.Prepend>
-                                        <Button color="info" style={{ color: "white", zIndex: 0 }} onClick={this.openFileBrowser.bind(this)}><i className="cui-file"></i> Subir Archivo&hellip;</Button>
+                    </Col>
 
-
-                                        <input type="file" hidden onChange={this.fileHandler.bind(this)} ref={this.fileInput} onClick={(event) => { event.target.value = null }} style={{ "padding": "10px" }} />
-                                     
-                                    </InputGroup.Prepend>
-                                   
-                                   
-                                    <Form.Control
-                                        type="text"
-                                        name="lastName"
-                                        value={this.state.uploadedFileName}                                        
-                                        isValid={!this.state.isFormInvalid} 
-                                    />
-                                   
-                                </InputGroup>
-                                <InputGroup>
-                                    <Form.Text style={{ fontWeight: "bold", fontSize:"12px"}} className="textAlert">{this.state.messageDoc}</Form.Text>
-                                    </InputGroup>
-                            </Form.Group>
-                        </Col>
-
-                    </Form>
-
-                    {this.state.dataLoaded &&
-                        <div>
-                            <Card body outline color="secondary" className="restrict-card">
-
-                                <OutTable data={this.state.rows} columns={this.state.cols} tableClassName="ExcelTable2007" tableHeaderRowClass="heading" />
-
-                            </Card>
-                        </div>}
-                </Container>
+                </Row>
+                <Row>
+                    <Col sm={12}>
+                        <Table >
+                            <thead className="table-headsch">
+                                <tr>
+                                    <th></th>
+                                    <th>Fecha</th>
+                                    <th>Fecha valuta</th>
+                                    <th>Descripción operación</th>
+                                    <th>Monto</th>
+                                    <th>Saldo</th>
+                                    <th>Sucursal - agencia</th>
+                                    <th>Operación - Número</th>
+                                    <th>Operación - Hora</th>
+                                    <th>Usuario</th>
+                                    <th>UTC</th>
+                                    <th>Referencia2</th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                {!loading && !noData &&
+                                    registers.map((item, idx) => {
+                                        return (
+                                            <tr key={idx}>
+                                                <td>{idx + 1}</td>
+                                                <th>{item.fecha}</th>
+                                                <td>{item.fechaval}</td>
+                                                <td>{item.detalle}</td>
+                                                <td>{item.monto}</td>
+                                                <td>{item.saldo}</td>
+                                                <td>{item.sucursal}</td>
+                                                <td>{item.nroOperacion}</td>
+                                                <td>{item.opHora}</td>
+                                                <td>{item.usuario}</td>
+                                                <td>{item.utc}</td>
+                                                <td>{item.ref}</td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                            {loading &&
+                                <Row>
+                                    <Col sm={12}>
+                                        <div>
+                                            <Spinner animation="border" variant="dark"></Spinner>
+                                            <p>Cargando registros...</p>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            }
+                            {!loading && noData &&
+                                <Row>
+                                    <Col sm={12}>
+                                        <Form.Label>{noDataMessage}</Form.Label>
+                                    </Col>
+                                </Row>
+                            }
+                        </Table>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm={12} style={{ textAlign: 'right' }}>
+                        <Button onClick={e => this.save(e)}>Guardar</Button>
+                    </Col>
+                </Row>
             </div>
-        );
+        )
     }
-
 }

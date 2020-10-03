@@ -3,18 +3,18 @@ import { Form, Tabs, Tab } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-import Comission from '../../components/comissions/Comission';
+import Quote from '../../components/payment/Quote';
 
 
-export default class PayView extends Component {
+export default class QuotePayView extends Component {
     
     render(){
         return(
             <div style={{ background: "white" }}>
                 <Form.Label className="content-title">Operaciones</Form.Label>
-                <Tabs className="custom-tabs-main" defaultActiveKey="comission" >
-                        <Tab eventKey="comission" title="Pagos Iniciales">
-                            <Comission></Comission>
+                <Tabs className="custom-tabs-main" defaultActiveKey="initial" >
+                        <Tab eventKey="initial" title="Pagos de Cuotas">
+                            <Quote></Quote>
                         </Tab>
                 </Tabs>
             </div>

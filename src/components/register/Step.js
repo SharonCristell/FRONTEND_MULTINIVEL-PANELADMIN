@@ -4,14 +4,13 @@ import { Form, Row, Col, Spinner, Button,
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { RiDeleteBinLine } from 'react-icons/ri';
 
-import PayPalButton from '../payment/PaypalButton';
-import PayVoucher from '../payment/PayVoucher';
+
 // import { PayPalButton } from 'react-paypal-button-v2'
 import logo from '../../images/paypal-logo.png';
 import logoBcp from '../../images/bcp-logo.jpg';
 import logoInter from '../../images/interbank-logo.png';
 import UtilService from '../../services/utils.service';
-import PayVoucherInter from '../payment/PayVoucherInter';
+
 
  /**
   * Class
@@ -537,56 +536,7 @@ export default class Step extends Component {
                     <hr></hr>
                 </Form>
 
-                {/* Modal */}
-                <Modal show={this.state.showPayPal} 
-                    onHide={this.handleClose}
-                    backdrop="static">
-                    <Modal.Header closeButton>
-                    <Modal.Title>PayPal</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group>
-                            <PayPalButton mount={this.state.total}
-                                description={this.state.name} 
-                                eventPay={this.eventPay}></PayPalButton>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    <Button variant="secondary" onClick={this.handleClose}>
-                        Cerrar
-                    </Button>
-                    {/* <Button variant="primary" onClick={this.handleClose}>
-                        Save Changes
-                    </Button> */}
-                    </Modal.Footer>
-                </Modal>
-
-                {/* Modal upload voucher*/}
-                <Modal show={this.state.showVoucher} 
-                    onHide={this.handleCloseVoucher} style={{fontSize: 10}}
-                    backdrop="static">
-                    <Modal.Header closeButton>
-                    <Modal.Title>Pago en efectivo a tavés de {this.state.bank}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {this.state.isBcp &&
-                            <Form.Group>
-                                <PayVoucher total={this.state.total}
-                                    addVoucher={this.addVoucher} 
-                                    close={this.handleCloseVoucher}></PayVoucher>
-                                {/* <PayVoucher onChangePay= {this.onchangePayVoucher}></PayVoucher> */}
-                            </Form.Group>
-                        }
-                        { this.state.isInter &&
-                            <Form.Group>
-                                <PayVoucherInter total={this.state.total}
-                                    addVoucher={this.addVoucher} 
-                                    close={this.handleCloseVoucher}></PayVoucherInter>
-                            </Form.Group>
-                        }
-                       
-                    </Modal.Body>
-                </Modal>
+               
             </div>
         );
     }

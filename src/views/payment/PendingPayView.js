@@ -2,19 +2,19 @@ import React, { Component } from 'react';
 import { Form, Tabs, Tab } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import PendingPayment from '../../components/pendingpayment/PendingPayment';
+import Pending from '../../components/payment/Pending';
 
 
 
-export default class PayView extends Component {
+export default class PendingPayView extends Component {
     
     render(){
         return(
             <div style={{ background: "white" }}>
                 <Form.Label className="content-title">Pagos Pendientes</Form.Label>
-                <Tabs className="custom-tabs-main" defaultActiveKey="comission" >
-                        <Tab eventKey="comission" title="Pagos Pendientes">
-                            <PendingPayment></PendingPayment>
+                <Tabs className="custom-tabs-main" defaultActiveKey="initial" >
+                        <Tab eventKey="initial" title="Pagos Pendientes">
+                            <Pending></Pending>
                         </Tab>
                 </Tabs>
             </div>

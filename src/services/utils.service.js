@@ -138,6 +138,22 @@ class UtilService {
         });
     }
 
+     // TODO Get Cronograma de Quote Payment
+     async getScheduleQuotePendingList(idSuscription) {
+         
+        let url = API_URL + "/affilliatependingcronogram/affiliatependingcronogramlistwithoutinitial/" + idSuscription;
+        return await fetch(url)
+        .then(res => res.json())
+        .then(response => {
+            return response;
+        })
+        .catch(error => {
+            console.log(error);
+            return undefined;
+        });
+    }
+
+
     // TODO Get Tipo de Pago
     async getTipoPago(idTipoPago) {
          
@@ -340,6 +356,55 @@ class UtilService {
         return await fetch(url, {
             method:'POST',
             body: JSON.stringify(data),
+            headers:{
+                'Content-Type':'application/json'
+            }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(dataJson) {
+                
+                //return state true or false in objmodel
+                console.log(dataJson)
+                return dataJson;
+            })
+            .catch(function(err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+    async saveOperation(data) {
+       
+        // console.log(parameter)
+        let url = API_URL + "/membershipPayDetail/insertoperation";
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+
+                //return state true or false in objmodel
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+    async sendRegisterAutoValidator(parameter) {
+
+       
+        let url = API_URL + "/membershipPayDetail/autovalidator";
+        return await fetch(url, {
+            method:'POST',
+            body: JSON.stringify(parameter),
             headers:{
                 'Content-Type':'application/json'
             }
