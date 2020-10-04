@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import AuthService from '../../services/auth.service';
-import { Image, Navbar, Nav, NavDropdown, Modal, Button, Form } from 'react-bootstrap';
+import { Image, Navbar, Nav, Modal, Button, Form, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BsCreditCard, BsBellFill, BsQuestionSquareFill } from 'react-icons/bs';
-import { FaUserCircle } from 'react-icons/fa'
 
-import Account from '../../components/user/Account';
+
+
 import history from '../navigation/history';
 import logo_nav from '../../images/navologo.png';
 import '../styles/Custom.css';
 import Content from "../navigation/Content";
 import classNames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   faHome,
   faBriefcase,
@@ -110,6 +109,43 @@ export default class NavBar extends Component {
         });
     }
 
+    // Get SideBar by user 
+    getSideBar = () => {
+        let user = AuthService.getCurrentUserInfo();
+        // Get user 
+        if(user.username === "master" ) {
+            return (
+                <Navbar bg="light" expand="lg" className="flex-column">
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/initialpayment")}>Pagos Iniciales</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/pendingpayment")}>Pagos Pendientes</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/quotepayment")}>Pagos Cuotas</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/mailing")}>Envio Correos</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/documentation")}>Corregir datos y documentos</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/registered")}>Socios Registrados</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/uploadDocuments")}>Carga de Archivos</Nav.Link>
+                    <NavDropdown.Divider></NavDropdown.Divider>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/editor-schedule")}>Unificar cronogramas</Nav.Link>
+                    
+                </Navbar>
+            );
+    
+        } else {
+            return (
+                <Navbar bg="light" expand="lg" className="flex-column">
+                    
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/quotepayment")}>Pagos Cuotas</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/mailing")}>Envio Correos</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/documentation")}>Corregir datos y documentos</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/registered")}>Socios Registrados</Nav.Link>
+                    <NavDropdown.Divider></NavDropdown.Divider>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/editor-schedule")}>Unificar cronogramas</Nav.Link>
+                    
+                </Navbar>
+            );
+    
+        }
+        
+    }
 
     render() {
         // console.log("Navbar");
@@ -131,17 +167,7 @@ export default class NavBar extends Component {
                          <Image className="col-image" src={icon2} ></Image>
                     </Button>
                 </div>
-                <Navbar bg="light" expand="lg" className="flex-column">
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/initialpayment")}>Pagos Iniciales</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/pendingpayment")}>Pagos Pendientes</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/quotepayment")}>Pagos Cuotas</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/mailing")}>Envio Correos</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/documentation")}>Corregir datos y documentos</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/registered")}>Socios Registrados</Nav.Link>
-                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/uploadDocuments")}>Carga de Archivos</Nav.Link>
-                    
-                </Navbar>
-
+                {this.getSideBar()}
             </div>
         );
     }

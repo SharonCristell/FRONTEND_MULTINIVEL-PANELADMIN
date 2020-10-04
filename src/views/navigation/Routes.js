@@ -27,6 +27,7 @@ import PasswordView from "../config/PasswordView";
 import HomeGuestView from '../home/HomeGuestView';
 
 import AuthService from '../../services/auth.service';
+import EditorScheduleView from "../schedules/EditorScheduleView";
 export default class Routes extends Component {
     constructor(props){
         super(props);
@@ -86,6 +87,7 @@ export default class Routes extends Component {
                     <RouteProtected path="/registered" component={RegisterView} />
                     <RouteProtected path="/uploadDocuments" component={UploadDocumentsView} />
                     <RouteProtected path="/loginBack" component={LoginBackView} />
+                    <RouteProtected path="/editor-schedule" component={EditorScheduleView} />
                     <Route path="/guest" component={HomeGuestView}></Route>
                     <RouteProtected path="/" component={LoginPage} />
                 </Switch>
