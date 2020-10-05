@@ -31,6 +31,7 @@ class AuthService {
           let decode = jwt.decode(response.access_Token);
           // console.log(decode);
           console.log(decode.primarysid);
+          //aqui
           if (decode.primarysid== "12853") {
             let idUser = decode.primarysid;
             // Saveinformation

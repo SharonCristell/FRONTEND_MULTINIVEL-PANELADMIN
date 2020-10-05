@@ -111,9 +111,12 @@ export default class NavBar extends Component {
 
     // Get SideBar by user 
     getSideBar = () => {
-        let user = AuthService.getCurrentUserInfo();
+
+        // TODO aqui es el error :D ahhhhhhhhhhh
+        // getuserinfo se llama despues del login uhmm entonces seria filtrarlo por el iduser :D
+        let user = AuthService.getCurrentIdUser();
         // Get user 
-        if(user.username === "master" ) {
+        if(user === "12853" ) {
             return (
                 <Navbar bg="light" expand="lg" className="flex-column">
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/initialpayment")}>Pagos Iniciales</Nav.Link>
@@ -130,6 +133,7 @@ export default class NavBar extends Component {
             );
     
         } else {
+            // Id user ! == 12853 :D
             return (
                 <Navbar bg="light" expand="lg" className="flex-column">
                     
