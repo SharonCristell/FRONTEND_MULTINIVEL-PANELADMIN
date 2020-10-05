@@ -1,9 +1,9 @@
 import authHeader from './auth-header';
 import AuthService from './auth.service';
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
+// const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
-//const proxyurl = "";
+const proxyurl = "";
 //const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
 //const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
 const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
@@ -495,6 +495,10 @@ class UserService {
               return undefined;
           });
     }
+
+    /**
+     * Services for editor of user's schedule - only one schedules
+     */
     // get list user with filters
     async getListUserSearchAdmin(data) {
 
@@ -541,6 +545,56 @@ class UserService {
                 return undefined;
             });
     }
+
+     // Service to modify last schedule
+     async getLastSchedule(iduser) {
+
+        let url = API_URL + "membershipPayDetail/schedules/" + iduser;
+
+        return await fetch(url)
+            .then(res => res.json())
+            .then(response => {
+                return response;
+            })
+            .catch(error => {
+                //console.log(error);
+                return undefined;
+            });
+    }
+
+    /**
+     * Save data schedule in one schedule
+     * @param {*} iduser 
+     * @param {*} data 
+     */
+    async modifySchedule(iduser, data) {
+
+        let url = API_URL + "suscription/join/schedule/";// + iduser;
+
+        return await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+
+    /**
+     * End region -----------------------------------------------------------
+     */
+
     //Get suscripciotns  for admin
     async getSuscriptionByUserAdmin(idUser) {
 
