@@ -101,7 +101,7 @@ export default class Quote extends Component {
 
     async getPendingList() {
         // console.log("my pay");
-        let pendingLists = await UtilService.getAffiliationPendingList();
+        let pendingLists = await UtilService.getQuoteAffiliationPendingList();
         if (pendingLists !== undefined && pendingLists !== null) {
             if (pendingLists.status !== 1) {
 

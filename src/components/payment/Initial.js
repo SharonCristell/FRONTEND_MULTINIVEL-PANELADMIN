@@ -64,12 +64,16 @@ export default class Initial extends Component {
             checkboxArr: [],
             count: 0,
             suirChecked: false,
+            selectedItem: [],
+            quotesToVerify:[],
+
 
 
         }
         this.selected = {};
         this.handleCheck = this.handleCheck.bind(this);
-        this.getSchedule = this.getSchedule.bind(this);
+        this.handleCheckSuscription = this.handleCheckSuscription.bind(this);
+        //this.getSchedule = this.getSchedule.bind(this);
         
 
         this.getDebtRegister = this.getDebtRegister.bind(this);
@@ -213,7 +217,7 @@ export default class Initial extends Component {
         }
         else if (tipo === 'PreValidate') {
 
-            if (this.state.selectedSuscription.length <= 0) {
+            if (this.state.selectedItem.length <= 0) {
 
                 alert('Seleccione por lo menos un usuario a Pre-Validar');
             }
@@ -274,15 +278,47 @@ export default class Initial extends Component {
                     <td>{item.name}</td>
                     <td>{item.lastname}</td>
                     <td>{item.nroDocument}</td>
-                    <td>{item.patrocinador}</td>
+                    <td>{item.patrocinador}</td>                    
                     <td>{item.packageName}</td>
                     <td>
                         <Button variant="info" size="sm" onClick={e => this.getSchedule(e, item.idSuscription)}>Verificar</Button>
                     </td>
-                    <td>{item.packageName}</td>
+                    {this.getStatus(item.prestatus)}
 
                 </tr>
             ));
+        }
+        return tags;
+    }
+    getStatus = (i) => {
+        let tags = <td></td>;
+
+        if (i == 1) {
+            tags =
+
+                <td>
+                    <p>Aceptado</p>
+                </td>
+
+
+        }
+
+        else if (i == 2) {
+            tags =
+
+                <td>
+                    <p>Rechazado</p>
+                </td>
+        }
+
+      
+        else if (i == 0) {
+            tags =
+
+                <td>
+                    <p>Por Verificar</p>
+                </td>
+
         }
         return tags;
     }
@@ -400,6 +436,7 @@ export default class Initial extends Component {
 
 
     }
+   
     async getMotiveItemTypes() {
 
         let response = await UtilService.getDenialMotives();
@@ -416,19 +453,40 @@ export default class Initial extends Component {
         }
 
     }
-    getScheduleSelected =  (idSuscription) => {
+     // Handle modal 
+     getSchedulebyId = async (e, idSuscription) => {
         console.log(idSuscription)
-        let  quotesToVerify= {} ;
+        //e.preventDefault();
+        let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
 
-        this.getSchedule(idSuscription)
+        if (schedule !== undefined && schedule !== null) {
+            if (schedule.status == 1) {
+                this.setState({
+                    selectedItem: this.state.selectedItem = schedule.objModel.objModel,
+                    
+                });
+            } else {
+                this.setState({
+                    selectedItem: this.state.selectedItem = [],
+                 });
+                alert("No se hallaron datos de dicho usuario. Inténtelo más tarde.");
+            }
+        } else {
+            this.setState({
+                selectedItem: this.state.selectedItem = [],
+            });
+            alert("Tuvimos un error al obtener la información. Inténtelo más tarde.")
+        }
+        console.log(this.state.selectedItem)
 
-        let selectedSchedule= this.state.schedule;        
-        console.log(selectedSchedule)
-        if ( selectedSchedule.length >0) {
+        
+       
+        if ( this.state.selectedItem.length >0) {
 
+            let  quotes= {};
             let total=0;
             let numberOperation="";
-            selectedSchedule.forEach(elem => {
+            this.state.selectedItem.forEach(elem => {
                
                 if ( elem.verif==2) {
                     total=total+elem.quote                    
@@ -442,15 +500,14 @@ export default class Initial extends Component {
                 monto:total,
 
             };
-            quotesToVerify.push(paidRegister);
+           
+            this.setState({ quotesToVerify: paidRegister });
+            
+            console.log(this.state.quotesToVerify)
          
         }
-        return quotesToVerify;
-        
+      
     }
-
-
-
 
 
     handleChangeAll = (e) => {
@@ -825,41 +882,16 @@ export default class Initial extends Component {
 
     handleCheckSuscription = (event, data) => {
 
-        let list = this.state.pendingList;
-        let allChecked = this.state.allChecked;
-        if (event.target.value === "checkAll") {
-            list.forEach(item => {
-                allChecked = event.target.checked;
+        this.getSchedulebyId(event, data.value.idSuscription)
+        let list = this.state.selectedSuscription;
+        list.push(this.state.quotesToVerify);
+        this.setState({
+            selectedSuscription: this.state.selectedSuscription = list
+        });
+        console.log("Aqui")
 
-                let register = {
-                    idSuscription: item.idSuscription,
-    
-                };
-                let listed = this.state.selectedAll;
-                listed.push(register);
-                this.setState({
-                    selectedAll: this.state.selectedAll = listed
-                });
-            });
-            console.log(this.state.selectedAll)
-            
-            
-        } else {
-            
-
-            let register =  this.getScheduleSelected(data.value.idSuscription);
-            console.log(register)
-            let list = this.state.selectedSuscription;
-            list.push(register);
-            this.setState({
-                selectedSuscription: this.state.selectedSuscription = list
-            });
-            console.log("Aqui")
-
-            console.log(this.state.selectedSuscription)
-
-        }
-        this.setState({ list: list, allChecked: allChecked });
+        console.log(this.state.selectedSuscription)
+   
 
     };
     handleCheck = (event, data) => {
@@ -1434,7 +1466,7 @@ export default class Initial extends Component {
 
                         <Modal
                             backdrop="static"
-                            show={this.state. showPreValidate}
+                            show={this.state.showPreValidate}
                             onHide={this.handleClose}
                             style={{ fontSize: 12 }}
                         >

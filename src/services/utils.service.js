@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
-//const proxyurl = "";
+//const proxyurl = "https://cors-anywhere.herokuapp.com/";
+const proxyurl = "";
 
-//const API_URL = proxyurl + 'http://45.66.156.160:60/api';
-//const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
-const API_URL = proxyurl + 'https://api.inresorts.club/api';
-const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
+const API_URL = proxyurl + 'http://45.66.156.160:60/api';
+const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+//const API_URL = proxyurl + 'https://api.inresorts.club/api';
+//const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
 class UtilService {
 
@@ -97,6 +97,20 @@ class UtilService {
       async getAffiliationPendingList() {
   
         let url = API_URL + "/affilliatepending/affiliatependinglist";
+        return await fetch(url)
+        .then(res => res.json())
+        .then(response => {
+            return response;
+        })
+        .catch(error => {
+            console.log(error);
+            return undefined;
+        });
+    }
+     // TODO Get Quote Affiliation List
+     async getQuoteAffiliationPendingList() {
+  
+        let url = API_URL + "/affilliatepending/affiliatependinglistquotes";
         return await fetch(url)
         .then(res => res.json())
         .then(response => {
