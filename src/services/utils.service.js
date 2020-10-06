@@ -107,6 +107,7 @@ class UtilService {
             return undefined;
         });
     }
+    
      // TODO Get Quote Affiliation List
      async getQuoteAffiliationPendingList() {
   
