@@ -886,7 +886,6 @@ export default class Initial extends Component {
 
         console.log(this.state.selectedSuscription)
 
-
     };
     handleCheck = (event, data) => {
         console.log(data.checked);
