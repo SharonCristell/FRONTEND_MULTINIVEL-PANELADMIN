@@ -116,9 +116,9 @@ export default class NavBar extends Component {
         // Get user 
         if(user === "12853" ) {
 
-        let user = AuthService.getCurrentUserInfo();
+        let user = AuthService.getCurrentIdUser();
         // Get user 
-        if(user.username === "master" ) {
+        if(user === "12853" ) {
 
             return (
                 <Navbar bg="light" expand="lg" className="flex-column">
@@ -151,6 +151,7 @@ export default class NavBar extends Component {
             );
     
         }
+    }
         
     }
 
