@@ -38,7 +38,7 @@ export default class UploadDocumentView extends Component {
 
                 if (flag) {
                     register.fecha = array[0];
-                    register.fechaDeOperacion = array[0];
+                    //register.fechaDeOperacion = array[0];
                     register.fechaDeOperacion = array[1];
                     register.detalle = array[2];
                     register.monto = array[3].replace(",", "");
