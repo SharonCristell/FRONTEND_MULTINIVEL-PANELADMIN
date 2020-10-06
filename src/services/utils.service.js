@@ -154,7 +154,7 @@ class UtilService {
 
      // TODO Get Cronograma de Quote Payment
      async getScheduleQuotePendingList(idSuscription) {
-         
+        console.log(idSuscription)
         let url = API_URL + "/affilliatependingcronogram/affiliatependingcronogramlistwithoutinitial/" + idSuscription;
         return await fetch(url)
         .then(res => res.json())

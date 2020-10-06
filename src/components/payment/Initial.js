@@ -32,8 +32,7 @@ export default class Initial extends Component {
             selected: [],
             selections: [],
             selectedSuscription: [],
-            selectedSuscriptions: [],
-            selectedAll: [],
+           selectedAll: [],
 
             idSuscription: 0,
             idMembership: 0,
@@ -49,7 +48,7 @@ export default class Initial extends Component {
             showAceptar: false,
             showRechazarVarios: false,
             showAceptarVarios: false,
-            showPreValidate:false,
+            showPreValidate: false,
             showBoton: true,
             showModalPicture: false,
             imgModal: "",
@@ -64,8 +63,7 @@ export default class Initial extends Component {
             checkboxArr: [],
             count: 0,
             suirChecked: false,
-            selectedItem: [],
-            quotesToVerify:[],
+            quotesToVerify: [],
 
 
 
@@ -73,9 +71,6 @@ export default class Initial extends Component {
         this.selected = {};
         this.handleCheck = this.handleCheck.bind(this);
         this.handleCheckSuscription = this.handleCheckSuscription.bind(this);
-        //this.getSchedule = this.getSchedule.bind(this);
-        
-
         this.getDebtRegister = this.getDebtRegister.bind(this);
         this.getPendingList = this.getPendingList.bind(this);
     }
@@ -100,7 +95,7 @@ export default class Initial extends Component {
         this.getPendingList()
         this.getTipoPago();
         this.getMotiveItemTypes();
-        
+
 
 
 
@@ -199,7 +194,7 @@ export default class Initial extends Component {
                 });
             }
         }
-        
+
         else if (tipo === 'RechazarVarios') {
 
             if (this.state.selections.length <= 0) {
@@ -217,7 +212,7 @@ export default class Initial extends Component {
         }
         else if (tipo === 'PreValidate') {
 
-            if (this.state.selectedItem.length <= 0) {
+            if (this.state.selectedSuscription.length <= 0) {
 
                 alert('Seleccione por lo menos un usuario a Pre-Validar');
             }
@@ -265,7 +260,7 @@ export default class Initial extends Component {
 
     getDebtRegister = () => {
         let tags = <tr></tr>;
-        let checked=false;
+        let checked = false;
 
         if (this.state.pendingList.length > 0) {
             tags = this.state.pendingList.map((item, idx) => (
@@ -278,7 +273,7 @@ export default class Initial extends Component {
                     <td>{item.name}</td>
                     <td>{item.lastname}</td>
                     <td>{item.nroDocument}</td>
-                    <td>{item.patrocinador}</td>                    
+                    <td>{item.patrocinador}</td>
                     <td>{item.packageName}</td>
                     <td>
                         <Button variant="info" size="sm" onClick={e => this.getSchedule(e, item.idSuscription)}>Verificar</Button>
@@ -311,7 +306,7 @@ export default class Initial extends Component {
                 </td>
         }
 
-      
+
         else if (i == 0) {
             tags =
 
@@ -436,7 +431,7 @@ export default class Initial extends Component {
 
 
     }
-   
+
     async getMotiveItemTypes() {
 
         let response = await UtilService.getDenialMotives();
@@ -453,59 +448,28 @@ export default class Initial extends Component {
         }
 
     }
-     // Handle modal 
-     getSchedulebyId = async (e, idSuscription) => {
+    // Handle modal 
+    getSchedulebyId = async (e, idSuscription) => {
         console.log(idSuscription)
         //e.preventDefault();
         let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
 
         if (schedule !== undefined && schedule !== null) {
             if (schedule.status == 1) {
-                this.setState({
-                    selectedItem: this.state.selectedItem = schedule.objModel.objModel,
-                    
-                });
+              
+                return schedule.objModel.objModel;
             } else {
-                this.setState({
-                    selectedItem: this.state.selectedItem = [],
-                 });
+               
                 alert("No se hallaron datos de dicho usuario. Inténtelo más tarde.");
+                return [];
             }
         } else {
-            this.setState({
-                selectedItem: this.state.selectedItem = [],
-            });
+           
+            return [];
             alert("Tuvimos un error al obtener la información. Inténtelo más tarde.")
         }
         console.log(this.state.selectedItem)
 
-        
-       
-        if ( this.state.selectedItem.length >0) {
-
-            let  quotes= {};
-            let total=0;
-            let numberOperation="";
-            this.state.selectedItem.forEach(elem => {
-               
-                if ( elem.verif==2) {
-                    total=total+elem.quote                    
-                }
-                numberOperation=elem.nroOperacion
-                                
-            });
-            let paidRegister = {
-
-                nroOperacion:numberOperation,
-                monto:total,
-
-            };
-           
-            this.setState({ quotesToVerify: paidRegister });
-            
-            console.log(this.state.quotesToVerify)
-         
-        }
       
     }
 
@@ -753,27 +717,21 @@ export default class Initial extends Component {
         console.log(this.state.selectedSuscription)
 
         let response = await UtilService.sendRegisterAutoValidator(this.state.selectedSuscription);
+        console.log(this.state.response)
 
         if (response !== undefined) {
             if (response.status === 1) {
-                // alert('Usuario registrado');
-                this.setState({
-                    isComplete: this.state.isComplete = true
-                });
+                 alert('Pre Validación exitosa');
+                 window.location.reload();
 
             } else {
-                //alert("Aqui un error al momento de realizar la validación.");
+                alert("Aqui un error al momento de realizar la validación.");
             }
         } else {
             alert('Tuvimos un problema en la validación. Inténtalo más tarde.');
         }
 
-        window.location.reload();
-
-
-
-
-    };
+           };
 
 
 
@@ -791,6 +749,8 @@ export default class Initial extends Component {
             showOthers: this.state.showOthers = false,
             idMotive: this.state.idMotive = -1,
             selections: this.state.selections = [],
+            selectedSuscription: this.state.selectedSuscription = [],
+
 
         });
     }
@@ -880,10 +840,44 @@ export default class Initial extends Component {
         this.setState(({ suirChecked }) => ({ suirChecked: !suirChecked }))
 
 
-    handleCheckSuscription = (event, data) => {
+    handleCheckSuscription = async (event, data) => {
 
-        this.getSchedulebyId(event, data.value.idSuscription)
+        
+        let responseArray = await this.getSchedulebyId(event, data.value.idSuscription)
+        console.log(responseArray)
+        // en base a response aqui deberia ser toda tu logica para evitar el async 
+        if (responseArray.length > 0) {
+           
+                let  quotes= {};
+                let total=0;
+                let numberOperation="";
+                responseArray.forEach(elem => {
+                   
+                    if ( elem.verif==2) {
+                        total=total+elem.quote  
+                        numberOperation=elem.nroOperacion
+                                                        
+                    }
+                   
+                                    
+                });
+                let paidRegister = {
+                    idSuscription: Number(data.value.idSuscription),
+                    CuentaEmpresaNroOperacion:numberOperation,
+                    monto:total,
+    
+                };
+                console.log(paidRegister)
+                this.setState({ quotesToVerify: paidRegister });
+                
+                console.log(this.state.quotesToVerify)
+             
+
+        }
+
+        //y aqui recien settear tu variable de state
         let list = this.state.selectedSuscription;
+        console.log(this.state.quotesToVerify)
         list.push(this.state.quotesToVerify);
         this.setState({
             selectedSuscription: this.state.selectedSuscription = list
@@ -891,7 +885,7 @@ export default class Initial extends Component {
         console.log("Aqui")
 
         console.log(this.state.selectedSuscription)
-   
+
 
     };
     handleCheck = (event, data) => {
@@ -949,10 +943,10 @@ export default class Initial extends Component {
                             <Row>
                                 <Col sm={2}>
 
-                                <Button size="sm" variant="danger" onClick={(e) => { this.onShowModale(e, 'PreValidate') }}>Pre Validar</Button>
-                               
+                                    <Button size="sm" variant="danger" onClick={(e) => { this.onShowModale(e, 'PreValidate') }}>Pre Validar</Button>
 
-        
+
+
                                 </Col>
                                 <Col sm={2}>
                                     <Button variant="primary">
@@ -977,7 +971,7 @@ export default class Initial extends Component {
                                             
                                         <Checkbox value="checkAll" checked={this.state.allChecked} onChange={this.handleCheckSuscription} />
                                     */}
-                                        </th>
+                                    </th>
                                     <th>N° registro</th>
                                     <th>Marca Temporal</th>
                                     <th>Usuario</th>
@@ -1462,7 +1456,7 @@ export default class Initial extends Component {
                             </Modal.Body>
                         </Modal>
                         {/* Modal to Validate */}
-                                             
+
 
                         <Modal
                             backdrop="static"
