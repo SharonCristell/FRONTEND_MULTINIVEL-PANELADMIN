@@ -216,12 +216,7 @@ class AuthService {
     return sessionStorage.getItem('name');
   }
 
-  getCurrentTime() {
-    return JSON.parse(sessionStorage.getItem('user'));
-  }
-
-
-  getIsLogged() {
+   getIsLogged() {
     //console.log(sessionStorage.getItem('user'));
     if (sessionStorage.getItem('user')) {
       return true;
