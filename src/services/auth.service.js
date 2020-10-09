@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
+//const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
-const API_URL = proxyurl + 'https://api.inresorts.club/api';
-const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
+//const API_URL = proxyurl + 'https://api.inresorts.club/api';
+//const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
-//const proxyurl = "";
-//const API_URL = proxyurl + 'http://45.66.156.160:60/api';
-//const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+const proxyurl = "";
+const API_URL = proxyurl + 'http://45.66.156.160:60/api';
+const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
 
 class AuthService {
 
@@ -31,6 +31,7 @@ class AuthService {
           let decode = jwt.decode(response.access_Token);
           // console.log(decode);
           console.log(decode.primarysid);
+          //aqui
           if (decode.primarysid== "12853") {
             let idUser = decode.primarysid;
             // Saveinformation
@@ -213,6 +214,10 @@ class AuthService {
 
   getName() {
     return sessionStorage.getItem('name');
+  }
+
+  getCurrentTime() {
+    return JSON.parse(sessionStorage.getItem('user'));
   }
 
 

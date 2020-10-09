@@ -62,6 +62,7 @@ export default class Quote extends Component {
             checkboxArr: [],
             count: 0,
             suirChecked: false,
+            showPreValidate: false,
 
 
         }
@@ -101,7 +102,7 @@ export default class Quote extends Component {
 
     async getPendingList() {
         // console.log("my pay");
-        let pendingLists = await UtilService.getAffiliationPendingList();
+        let pendingLists = await UtilService.getQuoteAffiliationPendingList();
         if (pendingLists !== undefined && pendingLists !== null) {
             if (pendingLists.status !== 1) {
 
@@ -192,6 +193,7 @@ export default class Quote extends Component {
                 });
             }
         }
+
         else if (tipo === 'RechazarVarios') {
 
             if (this.state.selections.length <= 0) {
@@ -202,6 +204,21 @@ export default class Quote extends Component {
 
                 this.setState({
                     showRechazarVarios: true,
+
+
+                });
+            }
+        }
+        else if (tipo === 'PreValidate') {
+
+            if (this.state.selectedSuscription.length <= 0) {
+
+                alert('Seleccione por lo menos un usuario a Pre-Validar');
+            }
+            else {
+
+                this.setState({
+                    showPreValidate: true,
 
 
                 });
@@ -220,6 +237,7 @@ export default class Quote extends Component {
         }
 
     }
+
 
     // Show modal to confirm accept vouchers
     onShowModal = (e, item, tipo) => {
@@ -248,7 +266,7 @@ export default class Quote extends Component {
             tags = this.state.pendingList.map((item, idx) => (
 
                 <tr key={item.idSuscription}>
-                    <td>{/*<Checkbox key={idx} value={item} onChange={this.handleCheckSuscription} />*/}</td>
+                    <td>{<Checkbox key={idx} value={item} onChange={this.handleCheckSuscription} />}</td>
                     <td>{idx + 1}</td>
                     <td>{Validation.convertExtendedDate(new Date(item.creationDateSuscription))}</td>
                     <td>{item.username}</td>
@@ -260,10 +278,42 @@ export default class Quote extends Component {
                     <td>
                         <Button variant="info" size="sm" onClick={e => this.getSchedule(e, item.idSuscription)}>Verificar</Button>
                     </td>
-                    <td>{item.packageName}</td>
+                    {this.getStatus(item.prestatus)}
 
                 </tr>
             ));
+        }
+        return tags;
+    }
+    getStatus = (i) => {
+        let tags = <td></td>;
+
+        if (i == 1) {
+            tags =
+
+                <td>
+                    <p>Aceptado</p>
+                </td>
+
+
+        }
+
+        else if (i == 2) {
+            tags =
+
+                <td>
+                    <p>Rechazado</p>
+                </td>
+        }
+
+
+        else if (i == 0) {
+            tags =
+
+                <td>
+                    <p>Por Verificar</p>
+                </td>
+
         }
         return tags;
     }
@@ -634,6 +684,7 @@ export default class Quote extends Component {
             showRechazar: this.state.showRechazar = false,
             showAceptarVarios: this.state.showAceptarVarios = false,
             showRechazarVarios: this.state.showRechazarVarios = false,
+            showPreValidate: this.state.showPreValidate = false,
             showOthers: this.state.showOthers = false,
             idMotive: this.state.idMotive = -1,
             selections: this.state.selections = [],
@@ -724,48 +775,79 @@ export default class Quote extends Component {
 
     toggle = () =>
         this.setState(({ suirChecked }) => ({ suirChecked: !suirChecked }))
-
-
-    handleCheckSuscription = (event, data) => {
-
-        let list = this.state.pendingList;
-        let allChecked = this.state.allChecked;
-        if (event.target.value === "checkAll") {
-            list.forEach(item => {
-                allChecked = event.target.checked;
-
-                let register = {
-                    idSuscription: item.idSuscription,
+        getSchedulebyId = async (e, idSuscription) => {
+            console.log(idSuscription)
+            //e.preventDefault();
+            let schedule = await UtilService.getScheduleAffiliationPendingList(idSuscription);
     
-                };
-                let listed = this.state.selectedAll;
-                listed.push(register);
-                this.setState({
-                    selectedAll: this.state.selectedAll = listed
-                });
-            });
-            console.log(this.state.selectedAll)
-            
-            
-        } else {
+            if (schedule !== undefined && schedule !== null) {
+                if (schedule.status == 1) {
+                  
+                    return schedule.objModel.objModel;
+                } else {
+                   
+                    alert("No se hallaron datos de dicho usuario. Inténtelo más tarde.");
+                    return [];
+                }
+            } else {
+               
+                return [];
+                alert("Tuvimos un error al obtener la información. Inténtelo más tarde.")
+            }
+            console.log(this.state.selectedItem)
+    
+          
+        }
+    
 
-            let register = {
-                idSuscription: data.value.idSuscription,
+        handleCheckSuscription = async (event, data) => {
 
-            };
+        
+            let responseArray = await this.getSchedulebyId(event, data.value.idSuscription)
+            console.log(responseArray)
+            // en base a response aqui deberia ser toda tu logica para evitar el async 
+            if (responseArray.length > 0) {
+               
+                    let  quotes= {};
+                    let total=0;
+                    let numberOperation="";
+                    responseArray.forEach(elem => {
+                       
+                        if ( elem.verif==2) {
+                            total=total+elem.quote  
+                            numberOperation=elem.nroOperacion
+                                                            
+                        }
+                       
+                                        
+                    });
+                    let paidRegister = {
+                        idSuscription: Number(data.value.idSuscription),
+                        CuentaEmpresaNroOperacion:numberOperation,
+                        monto:total,
+        
+                    };
+                    console.log(paidRegister)
+                    this.setState({ quotesToVerify: paidRegister });
+                    
+                    console.log(this.state.quotesToVerify)
+                 
+    
+            }
+    
+            //y aqui recien settear tu variable de state
             let list = this.state.selectedSuscription;
-            list.push(register);
+            console.log(this.state.quotesToVerify)
+            list.push(this.state.quotesToVerify);
             this.setState({
                 selectedSuscription: this.state.selectedSuscription = list
             });
             console.log("Aqui")
-
+    
             console.log(this.state.selectedSuscription)
-
-        }
-        this.setState({ list: list, allChecked: allChecked });
-
-    };
+    
+    
+        };
     handleCheck = (event, data) => {
         console.log(data.checked);
         if (data.checked) {
@@ -818,12 +900,13 @@ export default class Quote extends Component {
                             <h5>Información actualizada al: {this.state.date}</h5>
                         </Form.Group>
                         <Form.Group>
-                            <Row>
+                        <Row>
                                 <Col sm={2}>
 
-                                    <Button variant="danger">
-                                        Pre Validar
-</Button>
+                                    <Button size="sm" variant="danger" onClick={(e) => { this.onShowModale(e, 'PreValidate') }}>Pre Validar</Button>
+
+
+
                                 </Col>
                                 <Col sm={2}>
                                     <Button variant="primary">
@@ -1331,7 +1414,32 @@ export default class Quote extends Component {
                                 </Modal.Footer>
                             </Modal.Body>
                         </Modal>
-                        {/* Modal to confirm vouchers */}
+                        {/* Modal to Validate */}
+
+
+                        <Modal
+                            backdrop="static"
+                            show={this.state.showPreValidate}
+                            onHide={this.handleClose}
+                            style={{ fontSize: 12 }}
+                        >
+                            <Modal.Body>
+                                <Form.Group>
+                                    <Form.Label className="content-subtitle">¿Desea confirmar la Pre Validación de los usuarios seleccionados?</Form.Label>
+
+
+                                </Form.Group>
+
+                                <Modal.Footer>
+                                    <Button variant="danger" onClick={(e) => { this.prevalidateList(e) }}>
+                                        Confirmar
+                        </Button>
+                                    <Button variant="primary" onClick={this.handleClose}>
+                                        Cerrar
+                        </Button>
+                                </Modal.Footer>
+                            </Modal.Body>
+                        </Modal>
 
                     </div>
                 }

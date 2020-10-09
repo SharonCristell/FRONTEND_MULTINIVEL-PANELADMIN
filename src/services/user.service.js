@@ -4,10 +4,12 @@ import AuthService from './auth.service';
 // const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
 const proxyurl = "";
-//const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
-//const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
-const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
-const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
+
+const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
+const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
+//const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
+//const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
+
 
 
 class UserService {
