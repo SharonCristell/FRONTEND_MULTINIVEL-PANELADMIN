@@ -162,7 +162,7 @@ export default class NavBar extends Component {
   render(){
     // console.log("Navbar");
     const isLogged = AuthService.getIsLogged();
-    console.log(isLogged);
+
     const name = AuthService.getName();
     const idUser = AuthService.getCurrentIdUser();
     let issuperUser = false;

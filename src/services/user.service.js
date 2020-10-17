@@ -7,9 +7,9 @@ const proxyurl = "";
 
 const  API_URL = proxyurl + 'http://45.66.156.160:60/api/';
 const API_USR = proxyurl + 'http://45.66.156.160:60/api/User';
-//const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
-//const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
+// const  API_URL = proxyurl + 'https://api.inresorts.club/api/';
+// const API_USR = proxyurl + 'https://api.inresorts.club/api/User';
 
 
 class UserService {
@@ -593,6 +593,29 @@ class UserService {
             });
     }
 
+    async modifyScheduleSuscription(data) {
+
+        let url = API_URL + "membershipPayDetail/update/schedule";
+
+        return await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
     /**
      * End region -----------------------------------------------------------
      */
@@ -612,7 +635,55 @@ class UserService {
             });
     }
 
-     
+    /**
+     * Overduw Payments
+     */
+
+     async searchOverduePayment(data) {
+        
+        let url = API_URL + "User/defaultinguser";
+    
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
+    
+    async searchOverduePaymentFilter(data) {
+        
+        let url = API_URL + "User/defaultinguserbystatus";
+    
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (dataJson) {
+                return dataJson;
+            })
+            .catch(function (err) {
+                console.error(err);
+                return undefined;
+            });
+    }
 
 
 }

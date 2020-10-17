@@ -33,6 +33,25 @@ class  Validation {
         return dformat;
     }
 
+    convertDateToString(dateString){
+        // console.log(date.getFullYear())
+        let dformat = "";
+        if(dateString !== null){
+            let date = new Date(dateString);
+            if(!isNaN(date)) {
+                if(date.getFullYear() === 1 || date.getFullYear() <= 1900) {
+                    dformat = "";
+                } else {
+                    dformat =(( "00" + (date.getDate())).slice(-2) + "/"  + ("00" + (date.getMonth()+1)).slice(-2) + "/"  +  date.getFullYear());
+                }
+            }
+        }
+        
+        return dformat;
+    }
+
+  
+
 
 }
 
