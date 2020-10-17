@@ -28,6 +28,9 @@ import HomeGuestView from '../home/HomeGuestView';
 
 import AuthService from '../../services/auth.service';
 import EditorScheduleView from "../schedules/EditorScheduleView";
+import OverdueView from "../payment/OverdueView";
+import EditScheduleView from "../schedules/EditScheduleView";
+
 export default class Routes extends Component {
     constructor(props){
         super(props);
@@ -55,8 +58,7 @@ export default class Routes extends Component {
     }
     render() {
         const { isLogged} = this.state;
-        console.log(isLogged)
- 
+        
         const LoginPage = (props) => {
             return (
                 
@@ -88,6 +90,8 @@ export default class Routes extends Component {
                     <RouteProtected path="/uploadDocuments" component={UploadDocumentsView} />
                     <RouteProtected path="/loginBack" component={LoginBackView} />
                     <RouteProtected path="/editor-schedule" component={EditorScheduleView} />
+                    <RouteProtected path="/editschedule" component={EditScheduleView}></RouteProtected>
+                    <RouteProtected path="/overduepayment" component={OverdueView}></RouteProtected>
                     <Route path="/guest" component={HomeGuestView}></Route>
                     <RouteProtected path="/" component={LoginPage} />
                 </Switch>

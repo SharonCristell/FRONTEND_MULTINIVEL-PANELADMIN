@@ -23,15 +23,14 @@ import {
 import icon2 from '../../images/icons/settings.png';
 import '../styles/Navbar.css';
 
-// // Production
-// const linkMail = 'https://inclub.world/register-payment';
-// const linkServer = 'https://inclub.world'
+// Production
+const linkMail = 'https://inclub.world/register-payment';
+const linkServer = 'https://inclub.world'
 
 
-// Test
-const linkMail = 'https://inresorttest.web.app/register-payment'
-const linkServer = 'https://inresorttest.web.app'
-const local = 'http://localhost:3001'
+// // Test
+// const linkMail = 'https://inresorttest.web.app/register-payment'
+// const linkServer = 'https://inresorttest.web.app'
 
 
 
@@ -67,6 +66,7 @@ export default class NavBar extends Component {
     OnClicked = (e, path) => {
         history.push(path);
     }
+
     handleShowLogin  = (e) => {
 
         e.preventDefault();
@@ -116,21 +116,19 @@ export default class NavBar extends Component {
         // Get user 
         if(user === "12853" ) {
 
-        let user = AuthService.getCurrentUserInfo();
-        // Get user 
-        if(user.username === "master" ) {
-
             return (
                 <Navbar bg="light" expand="lg" className="flex-column">
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/initialpayment")}>Pagos Iniciales</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/pendingpayment")}>Pagos Pendientes</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/quotepayment")}>Pagos Cuotas</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/overduepayment")}>Pagos vencidos</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/mailing")}>Envio Correos</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/documentation")}>Corregir datos y documentos</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/registered")}>Socios Registrados</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/uploadDocuments")}>Carga de Archivos</Nav.Link>
                     <NavDropdown.Divider></NavDropdown.Divider>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/editor-schedule")}>Unificar cronogramas</Nav.Link>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/editschedule")}>Editar cronogramas</Nav.Link>
                     
                 </Navbar>
             );
@@ -154,6 +152,8 @@ export default class NavBar extends Component {
         
     }
 
+
+   
     render() {
         // console.log("Navbar");
         const isLogged = AuthService.getIsLogged();

@@ -9,12 +9,13 @@ import UserService from '../../services/user.service';
 import Validation from '../../components/utils/Validation';
 
 
-export default class ScheduleModal extends Component {
+export default class EditSchedule extends Component {
 
     constructor(props){
         super(props);
         this.state = {
-            iduser: props.iduser, //14000
+            iduser: props.iduser,
+            idsuscripcion: props.idsuscripcion, 
             total: 0,
             registers: [],
             loading: false,
@@ -42,8 +43,8 @@ export default class ScheduleModal extends Component {
 
     async getRegister () {
         
-        let response = await UserService.getLastSchedule(this.state.iduser);
-
+        let response = await UserService.getSchedule(this.state.idsuscripcion);
+        console.log(response)
         if(response !== undefined ){
             if(response.status !== 1) {
                 //console.log(response);
@@ -55,49 +56,49 @@ export default class ScheduleModal extends Component {
                     total: this.state.total = 0
                 });
             } else {
-                if(response.objModel.listPaySchedulesJSONDetailPacked.length > 0) {
+                if(response.objModel.length > 0) {
 
                     let registers = [];
                     let total = 0 ;
 
-                    for(let i = 0; i < response.objModel.listPaySchedulesJSONDetailPacked.length; i++){
+                    for(let i = 0; i < response.objModel.length; i++){
                         //amortization and percent
-                        response.objModel.listPaySchedulesJSONDetailPacked[i].checkCalculate = this.state.calculateCheck;
-                        total += response.objModel.listPaySchedulesJSONDetailPacked[i].quote;
-                        response.objModel.listPaySchedulesJSONDetailPacked[i].payDate = Validation.convertDateToStringEx(response.objModel.listPaySchedulesJSONDetailPacked[i].payDate);
-                        response.objModel.listPaySchedulesJSONDetailPacked[i].nextExpiration = Validation.convertDateToStringEx(response.objModel.listPaySchedulesJSONDetailPacked[i].nextExpiration);
-                        registers.push(response.objModel.listPaySchedulesJSONDetailPacked[i])
+                        response.objModel[i].checkCalculate = this.state.calculateCheck;
+                        total += response.objModel[i].quote;
+                        response.objModel[i].payDate = Validation.convertDateToStringEx(response.objModel[i].payDate);
+                        response.objModel[i].nextExpiration = Validation.convertDateToStringEx(response.objModel[i].nextExpiration);
+                        registers.push(response.objModel[i])
 
                     }
 
                     total = Math.round((total + Number.EPSILON) * 100) / 100
                     // Get list of suscription
-                    let listFamily  = response.objModel.familyPackageLastSuscription.packages;
+                    // let listFamily  = response.objModel.familyPackageLastSuscription.packages;
                     // Get current suscription
-                    let lastSuscription = response.objModel.lastSuscriptionUser;
+                    // let lastSuscription = response.objModel.lastSuscriptionUser;
                     
-                    let result = listFamily.filter(obj => {
-                        return obj.id === lastSuscription.idPackage
-                    })
+                    // let result = listFamily.filter(obj => {
+                    //     return obj.id === lastSuscription.idPackage
+                    // })
 
-                    if(result.length === 1) {
-                        lastSuscription.package = result[0]
-                    }
+                    // if(result.length === 1) {
+                    //     lastSuscription.package = result[0]
+                    // }
                     
 
                     this.setState({
-                        registers: this.state.registers = response.objModel.listPaySchedulesJSONDetailPacked,
+                        registers: this.state.registers = response.objModel,
                         loading: this.state.loading = false,
                         noData: this.state.noData = false,
                         noDataMesssage : this.state.noDataMessage = "",
                         total: this.state.total = total,
-                        listSuscription:  this.state.listSuscription = listFamily,
-                        lastSuscription: this.state.lastSuscription = lastSuscription,
-                        selectSuscription: this.state.selectSuscription = lastSuscription
+                        // listSuscription:  this.state.listSuscription = listFamily,
+                        // lastSuscription: this.state.lastSuscription = lastSuscription,
+                        // selectSuscription: this.state.selectSuscription = lastSuscription
                     });
                 } else {
                     this.setState({
-                        registers: this.state.registers = response.objModel.listPaySchedulesJSONDetailPacked,
+                        registers: this.state.registers = response.objModel,
                         loading: this.state.loading = false,
                         noData: this.state.noData = true,
                         noDataMesssage : this.state.noDataMessage = "No hay registros para mostrar.",
@@ -575,18 +576,19 @@ export default class ScheduleModal extends Component {
 
         let data = {
             IdUser: this.state.iduser,
+            IdSuscription: this.state.idsuscripcion,
             PayScheduleJSONs: registers
         }
         // Verify if  suscripction is changed
-        if(this.state.lastSuscription.package.id === this.state.selectSuscription.package.id) {
-            data.FlagUpdatePackage = 0;
-            data.Package = this.state.lastSuscription.package
-        } else { 
-            data.FlagUpdatePackage = 1;
-            data.Package = this.state.selectSuscription.package
-        }
+        // if(this.state.lastSuscription.package.id === this.state.selectSuscription.package.id) {
+        //     data.FlagUpdatePackage = 0;
+        //     data.Package = this.state.lastSuscription.package
+        // } else { 
+        //     data.FlagUpdatePackage = 1;
+        //     data.Package = this.state.selectSuscription.package
+        // }
        
-        let response = await UserService.modifySchedule(this.state.iduser, data);
+        let response = await UserService.modifyScheduleSuscription(data);
 
         if(response !== undefined ){
             if(response.status === 1) {
@@ -903,7 +905,7 @@ export default class ScheduleModal extends Component {
     
                     </Col>
                 </Row> */}
-                <Row>
+                {/* <Row>
                     <Col sm={4}>
                         {lastSuscription === undefined && 
                             <Form.Text style={{marginTop: ".5em"}}><b>Suscripción actual:</b>  #</Form.Text>
@@ -926,7 +928,7 @@ export default class ScheduleModal extends Component {
                         </Form>
                         
                     </Col>
-                </Row>
+                </Row> */}
                 {selectSuscription !== undefined && 
                     <Row>
                         <Col sm={4}>
@@ -991,7 +993,7 @@ export default class ScheduleModal extends Component {
                             <th></th>
                         </tr>
                         <tr>
-                            <th>Descripcion</th>
+                            {/* <th >Descripcion</th> */}
                             <th >IdMeship Detail</th>
                             <th>Quote Description </th>
                             {/* <th>InitialDate</th>
@@ -1029,9 +1031,9 @@ export default class ScheduleModal extends Component {
                             registers.map((item, idx) => {
                                 return(
                                 <tr key={idx}>
-                                    <td>
+                                    {/* <td>
                                         <Form.Label>{item.familyPackage} / {item.package}</Form.Label>
-                                    </td>
+                                    </td> */}
                                     <td><Form.Control   style={{fontSize:10, width:'55px'}}
                                         value={item.idMembershipDetail}
                                         onChange={e => this.handleItemId(e, 'idMembershipDetail', idx)}
