@@ -190,28 +190,7 @@ export default class OverduePayment extends Component {
         }
     }
 
-    
-
-    sendWelcome = async(e, item) => {
-        e.preventDefault();
-        if(item.currentSuscription !== undefined){
-            let data = {
-                FlagEnvioPatrocinador : 0,
-                IdSuscripcion : item.currentSuscription.id
-            };
-            let  response = await UserService.sendWelcomeMsg(data);
-
-            if(response !== undefined && response.status === 1) {
-                alert("Mensaje de bienvenida fue enviado con éxito.")
-            } else {
-                alert("Se ha producido un error. Inténtelo más tarde.");
-            }
-        } else {
-            alert("Seleccione una suscripción.")
-        }
-       
-    }
-
+  
     /**
      * 
      * @param {*} e : event 
@@ -223,7 +202,8 @@ export default class OverduePayment extends Component {
         let idxPackage = e.target.selectedIndex - 1;
 
         // modify current item
-        item.currentSuscription =  item.overdueFees[idxPackage];
+        item.currentSuscription =  item.suscriptionIds[idxPackage];
+        item.currentInformation =  item.overdueFees[idxPackage];
 
         //update item in registers
         let listRegisters = this.state.registers;
@@ -234,63 +214,27 @@ export default class OverduePayment extends Component {
 
     }
 
-    // Handle modal alert
-    handleClose = (e) => {
-        this.setState({
-            showModal : false,
-            suscriptionModal: undefined,
-            checkCurrent: true,
-            checkSponsor: false,
-            checkOther: false,
-            emailOther: ""
-        });
-    }
-    handleShow = (e, item) => {
-        e.preventDefault();
-        if( item.currentSuscription !== undefined){
-            this.setState({
-                showModal : true,
-                suscriptionModal: item.currentSuscription,
-    
-            });
-        } else {
-            alert("Seleccione una suscripción.");
-        }
-        
-    }
 
-    sendAlert = async(e) => {
+    sendAlert = async(e, item) => {
         e.preventDefault();
-        if(this.state.suscriptionModal !== undefined){
-            let checkSponsor = this.state.checkSponsor;
-            let checkOther = this.state.checkOther;
-            let emailOther = this.state.emailOther;
     
-            let object = {
-                FlagEnvioPatrocinador: (checkSponsor)? 1: 0,
-                IdSuscripcion: this.state.suscriptionModal.id
+        if(item.currentSuscription !== undefined) {
 
+            // send alert 
+            let data = {
+                IdUser: item.id,
+                IdSuscription: item.currentSuscription.id
             };
-
-            if(checkOther ) {
-                if( emailOther.length > 0) {
-                    object.OtroEmail = emailOther;
-                } else {
-                    alert("Ingrese correo.");
-                    return;
-                }
-                
-            } 
-            
-            this.handleClose();
-
-            let  response = await UserService.sendAlertPayment(object);
+         
+            let  response = await UserService.sendAlertOverdue(data);
 
             if(response !== undefined && response.status === 1) {
-                alert("Alerta de pago fue enviada con éxito.")
+                alert("La notificación fue enviada con éxito.")
             } else {
                 alert("Se ha producido un error. Inténtelo más tarde.");
             }
+
+
         } else {
             alert("Seleccione una suscripción.")
         }
@@ -401,6 +345,7 @@ export default class OverduePayment extends Component {
                                     <th>Descripcion</th>
                                     <th>Fecha</th>
                                     <th>Monto cuota</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -408,7 +353,7 @@ export default class OverduePayment extends Component {
                                         let date = "";
                                             return (
                                                 <tr key={item.id}>
-                                                    <td>{idx}</td>
+                                                    <td>{idx + 1}</td>
                                                     <td>{item.name} {item.lastname}</td>
                                                    
                                                     <td>
@@ -433,15 +378,15 @@ export default class OverduePayment extends Component {
                                                     </td> */}
                                                 
                                                     {item.currentSuscription !== undefined && 
-                                                         <td>{item.currentSuscription.quoteDescription}</td>
+                                                         <td>{item.currentInformation.quoteDescription}</td>
                                                     }
-                                                    {item.currentSuscription !== undefined && item.currentSuscription.nextExpiration !== null &&
-                                                         <td>{Validation.convertDateToStringEx(item.currentSuscription.nextExpiration)}</td>
+                                                    {item.currentInformation !== undefined && item.currentInformation.nextExpiration !== null &&
+                                                         <td>{Validation.convertDateToStringEx(item.currentInformation.nextExpiration)}</td>
                                                     }
-                                                    {item.currentSuscription !== undefined && 
-                                                         <td>USD {item.currentSuscription.quote}</td>
+                                                    {item.currentInformation !== undefined && 
+                                                         <td>USD {item.currentInformation.quote}</td>
                                                     }
-                                                   {item.currentSuscription === undefined && 
+                                                   {item.currentInformation === undefined && 
                                                         <td colSpan={3}></td>
                                                    }
                                                    {/* { item.state === 1 &&
@@ -453,10 +398,10 @@ export default class OverduePayment extends Component {
                                                         <td> 
                                                        </td>
                                                    }
-                                                    
+                                                     */}
                                                     <td>
-                                                        <Button variant="warning" size="sm" onClick={(e) => {this.handleShow(e, item)}}><AiFillNotification></AiFillNotification></Button>
-                                                    </td> */}
+                                                        <Button variant="warning" size="sm" onClick={(e) => {this.sendAlert(e, item)}}><AiFillNotification></AiFillNotification>Notificar</Button>
+                                                    </td>
                                                 </tr>
                                             )
                                         })
