@@ -30,6 +30,7 @@ import AuthService from '../../services/auth.service';
 import EditorScheduleView from "../schedules/EditorScheduleView";
 import OverdueView from "../payment/OverdueView";
 import EditScheduleView from "../schedules/EditScheduleView";
+import PeriodView from "../admin/PeriodView";
 
 export default class Routes extends Component {
     constructor(props){
@@ -92,6 +93,7 @@ export default class Routes extends Component {
                     <RouteProtected path="/editor-schedule" component={EditorScheduleView} />
                     <RouteProtected path="/editschedule" component={EditScheduleView}></RouteProtected>
                     <RouteProtected path="/overduepayment" component={OverdueView}></RouteProtected>
+                    <RouteProtected path="/periods" component={PeriodView}></RouteProtected>
                     <Route path="/guest" component={HomeGuestView}></Route>
                     <RouteProtected path="/" component={LoginPage} />
                 </Switch>

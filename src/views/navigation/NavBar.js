@@ -13,11 +13,12 @@ import '../styles/Custom.css';
 import Sidebar from "./SideBar";
 import Content from "../navigation/Content";
 import '../styles/Navbar.css';
-// // Production
-//const link = 'https://inclub.world';
 
-//Test
-const link = 'https://inresorttest.web.app'
+// Production
+const link = 'https://inclub.world';
+
+// //Test
+// const link = 'https://inresorttest.web.app'
 
 export default class NavBar extends Component {
   
