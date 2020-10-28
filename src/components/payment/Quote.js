@@ -269,6 +269,7 @@ export default class Quote extends Component {
                     <td>{<Checkbox key={idx} value={item} onChange={this.handleCheckSuscription} />}</td>
                     <td>{idx + 1}</td>
                     <td>{Validation.convertExtendedDate(new Date(item.creationDateSuscription))}</td>
+                    <td>{Validation.convertDateToStringEx(item.payDate)}</td>
                     <td>{item.username}</td>
                     <td>{item.name}</td>
                     <td>{item.lastname}</td>
@@ -934,6 +935,7 @@ export default class Quote extends Component {
                                         </th>
                                     <th>N° registro</th>
                                     <th>Marca Temporal</th>
+                                    <th>Fecha de pago</th>
                                     <th>Usuario</th>
                                     <th>Nombre</th>
                                     <th>Apellidos</th>

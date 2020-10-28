@@ -198,6 +198,7 @@ export default class OverduePayment extends Component {
      * @param {*} idx : index - position od user into list
      */
     getSuscription = (e, item, idx) => {
+        console.log(item)
         let idPackage = Number(e.target.value);
         let idxPackage = e.target.selectedIndex - 1;
 
@@ -206,6 +207,7 @@ export default class OverduePayment extends Component {
         item.currentInformation =  item.overdueFees[idxPackage];
 
         //update item in registers
+        console.log(item)
         let listRegisters = this.state.registers;
         listRegisters[idx] = item;
         this.setState({
@@ -247,7 +249,7 @@ export default class OverduePayment extends Component {
       
         let optionPages = [];
         for(let i = 0; i < totalPages; i++) {
-            optionPages.push(<option value={i+1}>{i+1}</option>)
+            optionPages.push(<option key={i} value={i+1}>{i+1}</option>)
         }
 
         return(
@@ -352,17 +354,18 @@ export default class OverduePayment extends Component {
                                 { registers.map((item, idx) => {
                                         let date = "";
                                             return (
-                                                <tr key={item.id}>
+                                                <tr key={idx}>
                                                     <td>{idx + 1}</td>
                                                     <td>{item.name} {item.lastname}</td>
                                                    
                                                     <td>
                                                         <Form.Control as="select"
+                                                            id={item.id}
                                                             defaultValue={'DEFAULT'}
                                                             onChange={e => {this.getSuscription(e,item, idx)}}>
                                                             <option value="DEFAULT" disabled>Seleccione</option>
                                                             {item.suscriptionIds.map((itemSus, ind) => {
-                                                                return (<option value={ind}>{itemSus.packageName}</option>)
+                                                                return (<option key={ind} value={ind}>{itemSus.packageName}</option>)
                                                             })}
                                                         </Form.Control>
                                                     </td>
@@ -377,7 +380,7 @@ export default class OverduePayment extends Component {
                                                         </Form.Control>
                                                     </td> */}
                                                 
-                                                    {item.currentSuscription !== undefined && 
+                                                    {item.currentInformation !== undefined && 
                                                          <td>{item.currentInformation.quoteDescription}</td>
                                                     }
                                                     {item.currentInformation !== undefined && item.currentInformation.nextExpiration !== null &&

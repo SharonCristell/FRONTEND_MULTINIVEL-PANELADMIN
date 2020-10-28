@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import { Form, Tabs, Tab } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import Period from '../../components/admin/Period';
 
-import OverduePayment from '../../components/payment/OverduePayment';
-
-
-export default class OverdueView extends Component {
+export default class PeriodView extends Component {
     
     render(){
         return(
@@ -14,7 +12,7 @@ export default class OverdueView extends Component {
                 <Form.Label className="content-title">Operaciones</Form.Label>
                 <Tabs className="custom-tabs-main" defaultActiveKey="initial" >
                         <Tab eventKey="initial" title="Pagos vencidos">
-                            <OverduePayment></OverduePayment>
+                            <Period></Period>
                         </Tab>
                 </Tabs>
             </div>

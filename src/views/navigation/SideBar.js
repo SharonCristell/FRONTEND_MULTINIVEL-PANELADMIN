@@ -129,6 +129,8 @@ export default class NavBar extends Component {
                     <NavDropdown.Divider></NavDropdown.Divider>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/editor-schedule")}>Unificar cronogramas</Nav.Link>
                     <Nav.Link href="" onClick={e => this.OnClicked(e, "/editschedule")}>Editar cronogramas</Nav.Link>
+                    <NavDropdown.Divider></NavDropdown.Divider>
+                    <Nav.Link href="" onClick={e => this.OnClicked(e, "/periods")}>Periodos</Nav.Link>
                     
                 </Navbar>
             );
